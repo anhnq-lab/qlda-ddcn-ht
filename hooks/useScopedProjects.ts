@@ -1,23 +1,27 @@
 /**
- * useScopedProjects — QLDA ĐDCN TP.HCM
+ * useScopedProjects — QLDA ĐDCN Hà Tĩnh
  *
  * Centralized hook for department-scoped project filtering.
  * Now supports SERVER-SIDE pagination via usePaginatedProjects.
- * 
- * - Ban ĐHDA 1-7: Only see projects with matching management_board
- * - Global departments (Ban GĐ, Phòng KH-ĐT, etc.): See all projects
- * - Contractor: Only see allowed project IDs
- * - Super admin: See all projects
  *
- * The ban/board filter is pushed to the server via QueryParams.filters.board
+ * Phạm vi dữ liệu:
+ * - super_admin / director / chief_accountant: Tất cả dự án
+ * - deputy_director: Dự án thuộc các Ban phụ trách (leadership_assignments)
+ * - Phòng QLDA (PROJECT_SCOPED_DEPARTMENTS): Dự án thuộc Ban mình
+ * - Phòng nghiệp vụ - TrP/PhP: Tất cả dự án
+ * - Phòng nghiệp vụ - CV/HC: Chỉ dự án là thành viên (project_members)
+ * - Contractor: Chỉ dự án trong allowed_project_ids
+ *
+ * The ban/board/member filter is pushed to the server via QueryParams.filters
  */
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { usePaginatedProjects } from './usePaginatedProjects';
 import { useProjectStats, ProjectStatsResult } from './useProjectStats';
 import { useAuth } from '../context/AuthContext';
 import { useImpersonation } from '../context/ImpersonationContext';
 import { usePermissionCheck } from './usePermissionCheck';
 import { extractBanNumber } from '../utils/boardScope';
+import { supabase } from '../lib/supabase';
 import type { Project } from '../types';
 import type { QueryParams } from '../types/api';
 
@@ -75,11 +79,59 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
     // Effective user for scoping
     const effectiveUser = isImpersonating && impersonatedUser ? impersonatedUser : currentUser;
     const banNumber = extractBanNumber(effectiveUser?.Department);
+    const effectiveUserId = effectiveUser?.EmployeeID;
     // Khoá theo nội dung để memo ổn định (mảng đổi tham chiếu mỗi render)
     const managedBoardsKey = managedBoards.join(',');
     const allowedIdsKey = (effectiveUser?.AllowedProjectIDs || []).join(',');
 
+    // ── Member-scoped: CV/HC phòng nghiệp vụ chỉ thấy dự án mình là thành viên ──
+    // Khi user không global, không có board number, không phải contractor/PGĐ →
+    // fetch danh sách project_id từ bảng project_members.
+    const isMemberScoped = !isGlobalScope
+        && systemRole !== 'super_admin'
+        && systemRole !== 'contractor'
+        && !(systemRole === 'deputy_director' && managedBoards.length > 0)
+        && banNumber === null;
+
+    const [memberProjectIds, setMemberProjectIds] = useState<string[] | null>(null);
+    const [memberLoading, setMemberLoading] = useState(false);
+
+    useEffect(() => {
+        if (!isMemberScoped || !effectiveUserId) {
+            setMemberProjectIds(null);
+            return;
+        }
+        let active = true;
+        setMemberLoading(true);
+        (async () => {
+            try {
+                // Lấy project_id từ project_members + projects.created_by
+                const [memberRes, createdRes] = await Promise.all([
+                    supabase
+                        .from('project_members')
+                        .select('project_id')
+                        .eq('employee_id', effectiveUserId),
+                    supabase
+                        .from('projects')
+                        .select('project_id')
+                        .eq('created_by', effectiveUserId),
+                ]);
+                const ids = new Set<string>();
+                (memberRes.data || []).forEach((r: any) => ids.add(r.project_id));
+                (createdRes.data || []).forEach((r: any) => ids.add(r.project_id));
+                if (active) setMemberProjectIds([...ids]);
+            } catch (e) {
+                console.warn('[useScopedProjects] Không tải được member project IDs:', e);
+                if (active) setMemberProjectIds([]);
+            } finally {
+                if (active) setMemberLoading(false);
+            }
+        })();
+        return () => { active = false; };
+    }, [isMemberScoped, effectiveUserId]);
+
     // Build server-side filter params with board scope injected
+    const memberIdsKey = (memberProjectIds || []).join(',');
     const serverParams = useMemo((): QueryParams => {
         const base: QueryParams = { ...params };
         if (!base.filters) base.filters = {};
@@ -102,9 +154,13 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
         else if (banNumber !== null) {
             base.filters.board = banNumber.toString();
         }
+        // CV/HC phòng nghiệp vụ: chỉ dự án mình là thành viên hoặc tạo
+        else if (isMemberScoped && memberProjectIds !== null) {
+            base.filters.projectIds = memberProjectIds;
+        }
 
         return base;
-    }, [params, isGlobalScope, systemRole, banNumber, managedBoardsKey, allowedIdsKey]);
+    }, [params, isGlobalScope, systemRole, banNumber, managedBoardsKey, allowedIdsKey, isMemberScoped, memberIdsKey]);
 
     // Paginated fetch from server
     const { projects, total, page, pageSize, totalPages, isLoading, isFetching, refetch } = usePaginatedProjects(serverParams);
@@ -137,7 +193,7 @@ export function useScopedProjects(params?: QueryParams): ScopedProjectsResult {
         totalUnfiltered,
         isGlobalScope,
         banNumber,
-        isLoading: isLoading || isLoadingStats,
+        isLoading: isLoading || isLoadingStats || memberLoading,
         isFetching,
         refetch,
     };

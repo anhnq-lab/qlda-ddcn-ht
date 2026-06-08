@@ -104,87 +104,45 @@ export class ProjectService {
     }
 
     /**
-     * Get aggregate statistics for projects to display badges with project counts in the UI filters.
-     * Implements faceted search counting by fetching raw data and calculating counts based on active filters.
+     * Get aggregate statistics for projects — server-side faceted counting via RPC.
+     * Single DB call replaces fetching all rows + client-side counting.
      */
-    static async getStats(params?: QueryParams): Promise<{ 
-        statusCounts: Record<number, number>; 
-        currentStatusCounts: Record<number, number>; 
+    static async getStats(params?: QueryParams): Promise<{
+        statusCounts: Record<number, number>;
+        currentStatusCounts: Record<number, number>;
         groupCounts: Record<string, number>;
         boardCounts: Record<string, number>;
         specialtyCounts: Record<string, number>;
         total: number;
     }> {
         return withRetry(async () => {
-            // Fetch necessary columns for stats
-            let query = supabase.from('projects').select('status, current_status_code, group_code, management_board, specialty_type');
-            
-            // Apply all filters EXCEPT the ones we are counting
-            const statParams = { ...params };
-            if (statParams.filters) {
-                statParams.filters = { ...statParams.filters };
-                delete statParams.filters.status;
-                delete statParams.filters.currentStatus;
-                delete statParams.filters.group;
-                delete statParams.filters.board;
-                delete statParams.filters.specialtyType;
-            }
-            
-            query = this._applyFilters(query, statParams);
-            
-            const { data, error } = await query;
-            if (error) throw toServiceError(error, 'Không thể tải thống kê dự án');
-
-            const statusCounts: Record<number, number> = {};
-            const currentStatusCounts: Record<number, number> = {};
-            const groupCounts: Record<string, number> = {};
-            const boardCounts: Record<string, number> = {};
-            const specialtyCounts: Record<string, number> = {};
-            let total = 0;
-
-            const activeStatus = params?.filters?.status;
-            const activeCurrentStatus = params?.filters?.currentStatus;
-            const activeGroup = params?.filters?.group;
-            const activeBoard = params?.filters?.board;
-            const activeSpecialty = params?.filters?.specialtyType;
-
-            (data || []).forEach((row: any) => {
-                const s = row.status;
-                const cs = row.current_status_code;
-                const g = row.group_code;
-                const b = row.management_board;
-                const sp = row.specialty_type;
-
-                const matchesGroup = !activeGroup || g === activeGroup;
-                const matchesBoard = !activeBoard || b?.toString() === activeBoard?.toString();
-                const matchesSpecialty = !activeSpecialty || sp === activeSpecialty;
-                const matchesStatus = (!activeStatus || s?.toString() === activeStatus?.toString()) && 
-                                      (!activeCurrentStatus || cs?.toString() === activeCurrentStatus?.toString());
-
-                // Status & CurrentStatus Counts (applying group, board, specialty)
-                if (matchesGroup && matchesBoard && matchesSpecialty) {
-                    total++;
-                    if (s !== null && s !== undefined) statusCounts[s] = (statusCounts[s] || 0) + 1;
-                    if (cs !== null && cs !== undefined) currentStatusCounts[cs] = (currentStatusCounts[cs] || 0) + 1;
-                }
-
-                // Group Counts (applying status, board, specialty)
-                if (matchesStatus && matchesBoard && matchesSpecialty) {
-                    if (g) groupCounts[g] = (groupCounts[g] || 0) + 1;
-                }
-
-                // Board Counts (applying status, group, specialty)
-                if (matchesStatus && matchesGroup && matchesSpecialty) {
-                    if (b) boardCounts[b] = (boardCounts[b] || 0) + 1;
-                }
-
-                // Specialty Counts (applying status, group, board)
-                if (matchesStatus && matchesGroup && matchesBoard) {
-                    if (sp) specialtyCounts[sp] = (specialtyCounts[sp] || 0) + 1;
-                }
+            const f = params?.filters;
+            const { data, error } = await (supabase as any).rpc('get_project_stats', {
+                p_search: params?.search || null,
+                p_status: (f?.status !== undefined && f?.status !== '' && f?.status !== 'all') ? String(f.status) : null,
+                p_current_status: (f?.currentStatus !== undefined && f?.currentStatus !== '' && f?.currentStatus !== 'all') ? String(f.currentStatus) : null,
+                p_group: (f?.group && f.group !== 'all') ? f.group : null,
+                p_board: (f?.board && f.board !== 'all') ? String(f.board) : null,
+                p_specialty: (f?.specialtyType && f.specialtyType !== 'all') ? f.specialtyType : null,
+                p_stage: f?.stage || null,
             });
 
-            return { statusCounts, currentStatusCounts, groupCounts, boardCounts, specialtyCounts, total };
+            if (error) throw toServiceError(error, 'Không thể tải thống kê dự án');
+
+            const toNumericRecord = (obj: Record<string, number> | null): Record<number, number> => {
+                const result: Record<number, number> = {};
+                if (obj) Object.entries(obj).forEach(([k, v]) => { result[Number(k)] = v; });
+                return result;
+            };
+
+            return {
+                statusCounts: toNumericRecord(data?.status_counts),
+                currentStatusCounts: toNumericRecord(data?.current_status_counts),
+                groupCounts: data?.group_counts || {},
+                boardCounts: data?.board_counts || {},
+                specialtyCounts: data?.specialty_counts || {},
+                total: Number(data?.total) || 0,
+            };
         });
     }
 
@@ -210,7 +168,6 @@ export class ProjectService {
             // Project-id scope (nhà thầu: chỉ dự án được gói) — hard scope
             if (Array.isArray(f.projectIds)) query = query.in('project_id', f.projectIds.length > 0 ? f.projectIds : ['__none__']);
             if (f.specialtyType && f.specialtyType !== 'all') query = query.eq('specialty_type', f.specialtyType);
-            if (f.investmentType) query = query.eq('investment_type', f.investmentType);
             if (f.stage) query = query.eq('stage', f.stage);
             if (f.sector) query = query.eq('sector', f.sector);
         }
@@ -243,7 +200,38 @@ export class ProjectService {
         if (error) {
             throw toServiceError(error, 'Không thể tìm thấy dự án');
         }
-        return data ? dbToProject(data) : undefined;
+        if (!data) return undefined;
+
+        const project = dbToProject(data);
+
+        // Fetch investment policy decision
+        try {
+            const { data: policyData } = await supabase
+                .from('investment_policy_decisions')
+                .select('*')
+                .eq('project_id', project.ProjectID)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (policyData) {
+                (project as any).InvestmentPolicy = {
+                    DecisionNumber: policyData.decision_number,
+                    DecisionDate: policyData.decision_date || '',
+                    Authority: policyData.authority || '',
+                    Objectives: policyData.objectives || '',
+                    PreliminaryInvestment: Number(policyData.preliminary_investment) || 0,
+                    CapitalSources: policyData.capital_sources || [],
+                    Duration: policyData.duration || '',
+                    Location: policyData.location || '',
+                    DocumentPath: policyData.document_path || '',
+                };
+            }
+        } catch (policyErr) {
+            console.error('Failed to fetch investment policy:', policyErr);
+        }
+
+        return project;
     }
 
     /**
@@ -256,15 +244,21 @@ export class ProjectService {
     /**
      * Create a new project
      */
-    static async create(projectData: Partial<Project>): Promise<Project> {
+    static async create(projectData: Partial<Project> & {
+        PolicyDecisionNumber?: string;
+        PolicyDecisionAuthority?: string;
+        PolicyDecisionDate?: string;
+    }): Promise<Project> {
+        const { PolicyDecisionNumber, PolicyDecisionAuthority, PolicyDecisionDate, ...pureProjectData } = projectData;
+
         const insertData = projectToDb({
-            ProjectID: projectData.ProjectID || `DA-${Date.now()}`,
-            ProjectName: projectData.ProjectName || 'Dự án mới',
-            GroupCode: projectData.GroupCode || ProjectGroup.C,
-            Status: projectData.Status || ProjectStatus.Preparation,
-            TotalInvestment: projectData.TotalInvestment || 0,
-            IsEmergency: projectData.IsEmergency || false,
-            ...projectData,
+            ProjectID: pureProjectData.ProjectID || `DA-${Date.now()}`,
+            ProjectName: pureProjectData.ProjectName || 'Dự án mới',
+            GroupCode: pureProjectData.GroupCode || ProjectGroup.C,
+            Status: pureProjectData.Status || ProjectStatus.Preparation,
+            TotalInvestment: pureProjectData.TotalInvestment || 0,
+            IsEmergency: pureProjectData.IsEmergency || false,
+            ...pureProjectData,
         });
 
         const { data, error } = await supabase
@@ -277,16 +271,40 @@ export class ProjectService {
             'Không thể tạo dự án. Vui lòng thử lại.',
             'CREATE_FAILED',
             error,
-            { projectName: projectData.ProjectName }
+            { projectName: pureProjectData.ProjectName }
         );
-        return dbToProject(data);
+
+        const project = dbToProject(data);
+
+        // Save investment policy decision if exists
+        if (PolicyDecisionNumber) {
+            try {
+                await supabase
+                    .from('investment_policy_decisions')
+                    .insert({
+                        project_id: project.ProjectID,
+                        decision_number: PolicyDecisionNumber,
+                        authority: PolicyDecisionAuthority || '',
+                        decision_date: PolicyDecisionDate || null,
+                    });
+            } catch (policyErr) {
+                console.error('Failed to save investment policy on create:', policyErr);
+            }
+        }
+
+        return project;
     }
 
     /**
      * Update an existing project
      */
-    static async update(id: string, data: Partial<Project>): Promise<Project> {
-        const updateData = projectToDb(data);
+    static async update(id: string, data: Partial<Project> & {
+        PolicyDecisionNumber?: string;
+        PolicyDecisionAuthority?: string;
+        PolicyDecisionDate?: string;
+    }): Promise<Project> {
+        const { PolicyDecisionNumber, PolicyDecisionAuthority, PolicyDecisionDate, ...pureData } = data;
+        const updateData = projectToDb(pureData);
 
         const { data: updated, error } = await supabase
             .from('projects')
@@ -301,7 +319,67 @@ export class ProjectService {
             error,
             { projectId: id }
         );
-        return dbToProject(updated);
+
+        // Save or update investment policy decision
+        if (PolicyDecisionNumber !== undefined || PolicyDecisionAuthority !== undefined || PolicyDecisionDate !== undefined) {
+            try {
+                const { data: existing } = await supabase
+                    .from('investment_policy_decisions')
+                    .select('id')
+                    .eq('project_id', id)
+                    .maybeSingle();
+
+                const payload = {
+                    project_id: id,
+                    decision_number: PolicyDecisionNumber || '',
+                    authority: PolicyDecisionAuthority || '',
+                    decision_date: PolicyDecisionDate || null,
+                };
+
+                if (existing) {
+                    await supabase
+                        .from('investment_policy_decisions')
+                        .update(payload)
+                        .eq('id', existing.id);
+                } else if (PolicyDecisionNumber) {
+                    await supabase
+                        .from('investment_policy_decisions')
+                        .insert(payload);
+                }
+            } catch (policyErr) {
+                console.error('Failed to update investment policy:', policyErr);
+            }
+        }
+
+        // Return updated project with policy loaded
+        const project = dbToProject(updated);
+        try {
+            const { data: policyData } = await supabase
+                .from('investment_policy_decisions')
+                .select('*')
+                .eq('project_id', id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (policyData) {
+                (project as any).InvestmentPolicy = {
+                    DecisionNumber: policyData.decision_number,
+                    DecisionDate: policyData.decision_date || '',
+                    Authority: policyData.authority || '',
+                    Objectives: policyData.objectives || '',
+                    PreliminaryInvestment: Number(policyData.preliminary_investment) || 0,
+                    CapitalSources: policyData.capital_sources || [],
+                    Duration: policyData.duration || '',
+                    Location: policyData.location || '',
+                    DocumentPath: policyData.document_path || '',
+                };
+            }
+        } catch (policyErr) {
+            console.error('Failed to fetch investment policy on update:', policyErr);
+        }
+
+        return project;
     }
 
     /**
@@ -549,7 +627,6 @@ export class ProjectService {
         if (error) throw new Error(`Failed to delete package: ${error.message}`);
         // Plan total is auto-recalculated by DB trigger trg_recalculate_plan_total
     }
-
 
     /**
      * Get capital and disbursement info (NĐ 99/2021/NĐ-CP)

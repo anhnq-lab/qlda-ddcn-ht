@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import PermissionGate from '../../components/PermissionGate';
 import { useAllTasks, useUpdateTask, useDeleteTask, useSaveTask } from '../../hooks/useWorkflowTasks';
 import { useScopedProjects } from '../../hooks/useScopedProjects';
+import { usePermissionCheck } from '../../hooks/usePermissionCheck';
 import { useEmployees } from '../../hooks/useEmployees';
 import { Task, TaskStatus, TaskPriority } from '../../types';
 import { workflowTaskToTask } from '../../lib/dbMappers';
@@ -144,6 +145,7 @@ const TaskList: React.FC<TaskListProps> = ({
     // Data
     const { data: tasks = [], isLoading, error: tasksError } = useAllTasks();
     const { scopedProjects: projects, scopedProjectIds, isGlobalScope } = useScopedProjects({ pageSize: 9999 });
+    const { systemRole, managedDeptCodes } = usePermissionCheck();
     const { data: employees = [] } = useEmployees();
 
     // Mutations
@@ -464,20 +466,31 @@ const TaskList: React.FC<TaskListProps> = ({
             (task.StartDate && new Date(task.StartDate).getFullYear() === parseInt(filterYear))
         );
 
-        // Ép buộc lọc theo phòng ban đối với nhân viên không có quyền xem toàn cục
-        const finalFilterDept = isGlobalScope ? filterDepartment : userDept;
-
-        // Department filter
-        const matchDepartment = finalFilterDept === 'All' || finalFilterDept === '' || (() => {
+        // So khớp một công việc với một phòng (theo mã, tên, hoặc phòng của người được giao)
+        const taskMatchesDept = (deptNameOrCode: string): boolean => {
             if (task.DepartmentCode) {
                 const taskDeptName = DEPARTMENT_NAMES[task.DepartmentCode as DepartmentCode];
-                if (taskDeptName === finalFilterDept || task.DepartmentCode === finalFilterDept) {
-                    return true;
-                }
+                if (taskDeptName === deptNameOrCode || task.DepartmentCode === deptNameOrCode) return true;
             }
             const assignee = employees.find(e => e.EmployeeID === task.AssigneeID);
-            return assignee?.Department === finalFilterDept;
-        })();
+            return assignee?.Department === deptNameOrCode;
+        };
+
+        // Phạm vi phòng ban hiển thị:
+        //  - Toàn cục: theo bộ lọc người dùng chọn
+        //  - PGĐ: theo CÁC phòng mình phụ trách (managedDeptCodes = Ban QLDA + phòng nghiệp vụ),
+        //         hoặc công việc thuộc dự án trong phạm vi
+        //  - Còn lại: theo phòng của chính mình
+        let matchDepartment: boolean;
+        if (isGlobalScope) {
+            matchDepartment = filterDepartment === 'All' || filterDepartment === '' || taskMatchesDept(filterDepartment);
+        } else if (systemRole === 'deputy_director' && managedDeptCodes.length > 0) {
+            matchDepartment =
+                (!!task.DepartmentCode && managedDeptCodes.includes(task.DepartmentCode))
+                || (!!task.ProjectID && scopedProjectIds.has(task.ProjectID));
+        } else {
+            matchDepartment = userDept === '' || taskMatchesDept(userDept);
+        }
 
         // Overdue: chưa xong + có hạn + đã quá hạn
         const matchOverdue = !filterOverdue || (
@@ -502,7 +515,7 @@ const TaskList: React.FC<TaskListProps> = ({
         const matchTaskType = filterTaskType === 'All' || task.TaskType === filterTaskType;
 
         return matchStatus && matchProject && matchMonth && matchYear && matchDepartment && matchOverdue && matchNotUpdatedThisWeek && matchPersonal && matchTaskType && matchPendingProposal;
-    }), [tasks, filterStatus, filterProject, filterMonth, filterYear, filterDepartment, filterOverdue, filterNotUpdatedThisWeek, filterPersonal, filterTaskType, currentUser, scopedProjectIds, isGlobalScope, employees]);
+    }), [tasks, filterStatus, filterProject, filterMonth, filterYear, filterDepartment, filterOverdue, filterNotUpdatedThisWeek, filterPersonal, filterTaskType, currentUser, scopedProjectIds, isGlobalScope, employees, systemRole, managedDeptCodes, userDept]);
 
     // Tự động mở slide panel khi có taskId trên URL
     useEffect(() => {

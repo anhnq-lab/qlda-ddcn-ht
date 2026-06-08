@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Building2, DollarSign, HardHat, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale, Ruler, Lock } from 'lucide-react';
+import { Building2, DollarSign, Users, Sparkles, ImagePlus, Loader2, CheckCircle2, BarChart2, Activity, Scale, Ruler, Lock } from 'lucide-react';
 import { ProjectGroup, InvestmentType, Project, Employee, MANAGEMENT_BOARDS, SelectedMember } from '../../../types';
 import { generateProjectCode, ConstructionType, PermitType, detectSpecialtyByName } from '../../../utils/projectCodeGenerator';
 import EmployeeService from '../../../services/EmployeeService';
@@ -18,10 +18,7 @@ import { classifyProjectBySpecialty } from '../../../utils/projectCompliance';
 
 import { ProjectFormGeneral } from './forms/ProjectFormGeneral';
 import { ProjectFormLegal } from './forms/ProjectFormLegal';
-import { ProjectFormScale } from './forms/ProjectFormScale';
 import { ProjectFormInvestment } from './forms/ProjectFormInvestment';
-import { ProjectFormContractors } from './forms/ProjectFormContractors';
-import { ProjectFormStatus } from './forms/ProjectFormStatus';
 import { ProjectFormMembers } from './forms/ProjectFormMembers';
 import { CONSTRUCTION_TYPES, CONSTRUCTION_GRADES, PROVINCES } from './forms/FormShared';
 
@@ -34,10 +31,7 @@ interface CreateProjectModalProps {
 const PROJ_TABS = [
     { id: 'general',     label: 'Thông tin chung',       icon: Building2 },
     { id: 'legal',       label: 'Pháp lý',                icon: Scale },
-    { id: 'scale',       label: 'Quy mô công trình',     icon: Ruler },
     { id: 'investment',  label: 'Cơ cấu vốn & Chi phí',  icon: DollarSign },
-    { id: 'contractors', label: 'Nhà thầu',                icon: HardHat },
-    { id: 'status',      label: 'Trạng thái',              icon: Activity },
     { id: 'members',     label: 'Thành viên',              icon: Users },
 ] as const;
 
@@ -45,26 +39,15 @@ type TabId = typeof PROJ_TABS[number]['id'];
 
 const FIELD_TO_TAB: Record<string, TabId> = {
     ProjectID: 'general', ProjectName: 'general', GroupCode: 'general',
-    InvestmentType: 'general', ManagementBoard: 'general', StartDate: 'general',
+    ManagementBoard: 'general', StartDate: 'general',
     ProvinceCode: 'general', LocationCode: 'general', ConstructionType: 'general',
-    CompetentAuthority: 'general', InvestorName: 'general', Duration: 'general',
-    ExpectedEndDate: 'general', Objective: 'general', InvestmentScale: 'general',
-    SpecialtyType: 'general', SpecialtyDetails: 'general',
-    IsEmergency: 'general', IsODA: 'general', ImageUrl: 'general', Coordinates: 'general',
-    Stage: 'status', MainContractorName: 'contractors',
-    PolicyDecisionLevel: 'legal', PolicyDecisionNumber: 'legal', PolicyDecisionDate: 'legal',
-    PolicyDecisionAuthority: 'legal', DecisionNumber: 'legal', DecisionAuthority: 'legal',
-    ApprovalDate: 'legal', ConstructionGrade: 'legal',
+    ImageUrl: 'general', Coordinates: 'general', ConstructionGrade: 'general',
+    DecisionNumber: 'legal', DecisionAuthority: 'legal',
+    ApprovalDate: 'legal',
+    PolicyDecisionNumber: 'legal', PolicyDecisionAuthority: 'legal', PolicyDecisionDate: 'legal',
     DecisionLevelBeforeHandover: 'legal', OldInvestor: 'legal', TransferDecision: 'legal',
-    SiteArea: 'scale', ConstructionArea: 'scale', FloorArea: 'scale', BuildingHeight: 'scale',
-    BuildingDensity: 'scale', LandUseCoefficient: 'scale', TotalEstimate: 'scale',
-    AboveGroundFloors: 'scale', BasementFloors: 'scale',
-    TotalInvestment: 'investment', CapitalSource: 'investment', BudgetAllocations: 'investment',
+    TotalInvestment: 'investment', CapitalSource: 'investment',
     CostBreakdown: 'investment',
-    BiddingForm: 'contractors', ApplicableStandards: 'contractors', FeasibilityContractor: 'contractors',
-    SurveyContractor: 'contractors', ReviewContractor: 'contractors', ContractorDetails: 'contractors',
-    ProjectManagement: 'contractors',
-    CurrentStatusCode: 'status', AdjustedApproval: 'status', ProjectStatusInfo: 'status',
 };
 
 const DEFAULT_FORM_VALUES: ProjectModalFormValues = {
@@ -85,52 +68,21 @@ const DEFAULT_FORM_VALUES: ProjectModalFormValues = {
     ManagementBoard: 1,
     ApprovalDate: '',
     DecisionNumber: '',
-    ApplicableStandards: '',
-    FeasibilityContractor: '',
-    SurveyContractor: '',
-    ReviewContractor: '',
-    BiddingForm: '',
+    PolicyDecisionNumber: '',
+    PolicyDecisionAuthority: '',
+    PolicyDecisionDate: '',
     Objective: '',
     InvestmentScale: '',
-    TotalEstimate: 0,
-    SiteArea: 0,
-    ConstructionArea: 0,
-    FloorArea: 0,
-    BuildingHeight: 0,
-    BuildingDensity: 0,
-    LandUseCoefficient: 0,
-    AboveGroundFloors: 0,
-    BasementFloors: 0,
-    PolicyDecisionLevel: '',
-    PolicyDecisionNumber: '',
-    PolicyDecisionDate: '',
-    PolicyDecisionAuthority: '',
-    BudgetAllocations: {
-        BudgetNSTW: 0,
-        BudgetNSDiaphuong: 0,
-        BudgetLoan: 0,
-        BudgetODA: 0,
-        BudgetOtherNSNN: 0,
-    },
     DecisionAuthority: '',
     ExpectedEndDate: '',
     CostBreakdown: {},
-    KHVInfo: {},
-    ImplementationTracking: {},
-    AdjustedApproval: {},
-    ContractorDetails: {},
     ProjectManagement: {},
-    ProjectStatusInfo: {},
     DecisionLevelBeforeHandover: '',
     OldInvestor: '',
     TransferDecision: '',
     CurrentStatusCode: null,
     SpecialtyType: '',
-    SpecialtyDetails: '',
     Stage: '',
-    IsEmergency: false,
-    IsODA: false,
-    MainContractorName: '',
     ImageUrl: '',
     Coordinates: undefined,
 };
@@ -213,7 +165,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
         }
     }, [watchedTotalInvestment, watchedSpecialtyType, setValue]);
 
-    const DEFAULT_BUDGET = { BudgetNSTW: 0, BudgetNSDiaphuong: 0, BudgetLoan: 0, BudgetODA: 0, BudgetOtherNSNN: 0 };
+
 
     // Populate form data in edit mode
     useEffect(() => {
@@ -236,36 +188,15 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                 ManagementBoard: editProject.ManagementBoard || 1,
                 ApprovalDate: editProject.ApprovalDate ? new Date(editProject.ApprovalDate).toISOString().split('T')[0] : '',
                 DecisionNumber: editProject.DecisionNumber || '',
-                ApplicableStandards: editProject.ApplicableStandards || '',
-                FeasibilityContractor: editProject.FeasibilityContractor || '',
-                SurveyContractor: editProject.SurveyContractor || '',
-                ReviewContractor: editProject.ReviewContractor || '',
-                BiddingForm: editProject.BiddingForm || '',
+                PolicyDecisionNumber: (editProject as any).InvestmentPolicy?.DecisionNumber || '',
+                PolicyDecisionAuthority: (editProject as any).InvestmentPolicy?.Authority || '',
+                PolicyDecisionDate: (editProject as any).InvestmentPolicy?.DecisionDate ? new Date((editProject as any).InvestmentPolicy.DecisionDate).toISOString().split('T')[0] : '',
                 Objective: editProject.Objective || '',
                 InvestmentScale: editProject.InvestmentScale || '',
-                TotalEstimate: editProject.TotalEstimate || 0,
-                SiteArea: editProject.SiteArea || 0,
-                ConstructionArea: editProject.ConstructionArea || 0,
-                FloorArea: editProject.FloorArea || 0,
-                BuildingHeight: editProject.BuildingHeight || 0,
-                BuildingDensity: editProject.BuildingDensity || 0,
-                LandUseCoefficient: editProject.LandUseCoefficient || 0,
-                AboveGroundFloors: editProject.AboveGroundFloors || 0,
-                BasementFloors: editProject.BasementFloors || 0,
-                PolicyDecisionLevel: editProject.PolicyDecisionLevel || '',
-                PolicyDecisionNumber: editProject.PolicyDecisionNumber || '',
-                PolicyDecisionDate: editProject.PolicyDecisionDate || '',
-                PolicyDecisionAuthority: editProject.PolicyDecisionAuthority || '',
-                BudgetAllocations: { ...DEFAULT_BUDGET, ...(editProject.BudgetAllocations || {}) } as any,
                 DecisionAuthority: editProject.DecisionAuthority || '',
                 ExpectedEndDate: editProject.ExpectedEndDate ? new Date(editProject.ExpectedEndDate).toISOString().split('T')[0] : '',
                 CostBreakdown: (editProject.CostBreakdown || {}) as any,
-                KHVInfo: (editProject.KHVInfo || {}) as Record<string, unknown>,
-                ImplementationTracking: (editProject.ImplementationTracking || {}) as Record<string, unknown>,
-                AdjustedApproval: (editProject.AdjustedApproval || {}) as Record<string, unknown>,
-                ContractorDetails: (editProject.ContractorDetails || {}) as Record<string, unknown>,
                 ProjectManagement: (editProject.ProjectManagement || {}) as Record<string, unknown>,
-                ProjectStatusInfo: (editProject.ProjectStatusInfo || {}) as Record<string, unknown>,
                 DecisionLevelBeforeHandover: editProject.DecisionLevelBeforeHandover || '',
                 OldInvestor: editProject.OldInvestor || '',
                 TransferDecision: editProject.TransferDecision || '',
@@ -277,11 +208,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                         : ((editProject.SpecialtyType as any) === 'agriculture')
                             ? 'agriculture_rural'
                             : editProject.SpecialtyType || '') as any,
-                SpecialtyDetails: editProject.SpecialtyDetails || '',
                 Stage: editProject.Stage || '',
-                IsEmergency: editProject.IsEmergency || false,
-                IsODA: editProject.IsODA || false,
-                MainContractorName: editProject.MainContractorName || '',
                 ImageUrl: editProject.ImageUrl || '',
                 Coordinates: editProject.Coordinates || undefined,
             });
@@ -355,10 +282,6 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
         if (data.InvestorName) setField('InvestorName', data.InvestorName);
         if (data.CapitalSource) setField('CapitalSource', data.CapitalSource);
         if (data.LocationCode) setField('LocationCode', data.LocationCode);
-        if (data.ApplicableStandards) setField('ApplicableStandards', data.ApplicableStandards);
-        if (data.FeasibilityContractor) setField('FeasibilityContractor', data.FeasibilityContractor);
-        if (data.SurveyContractor) setField('SurveyContractor', data.SurveyContractor);
-        if (data.ReviewContractor) setField('ReviewContractor', data.ReviewContractor);
 
         if (data.TotalInvestment && data.TotalInvestment > 0) {
             setField('TotalInvestment', data.TotalInvestment);
@@ -451,7 +374,6 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
             setIsLoading(true);
             await onSave({
                 ...data,
-                Progress: 0,
                 StartDate: new Date(data.StartDate) as unknown as string & Date,
             } as Partial<Project> & { StartDate: Date }, selectedMembers);
             onClose();
@@ -686,38 +608,12 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ onClose,
                             />
                         )}
 
-                        {/* ═══ Tab 3: Quy mô công trình ═══ */}
-                        {activeTab === 'scale' && (
-                            <ProjectFormScale
-                                formData={formData}
-                                updateField={updateField}
-                            />
-                        )}
-
                         {/* ═══ Tab 4: Cơ cấu vốn & Chi phí ═══ */}
                         {activeTab === 'investment' && (
                             <ProjectFormInvestment
                                 formData={formData}
                                 updateField={updateField}
                                 errors={errors}
-                            />
-                        )}
-
-                        {/* ═══ Tab 5: Nhà thầu ═══ */}
-                        {activeTab === 'contractors' && (
-                            <ProjectFormContractors
-                                formData={formData}
-                                updateField={updateField}
-                                aiHighlight={aiHighlight}
-                            />
-                        )}
-
-                        {/* ═══ Tab 6: Trạng thái ═══ */}
-                        {activeTab === 'status' && (
-                            <ProjectFormStatus
-                                formData={formData}
-                                updateField={updateField}
-                                aiHighlight={aiHighlight}
                             />
                         )}
 

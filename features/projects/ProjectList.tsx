@@ -9,7 +9,7 @@ import { ProgressBar, DataTable, Column } from '../../components/ui';
 import { formatShortCurrency as formatCurrency } from '../../utils/format';
 import { getGroupGradient, getGroupColor } from '../../utils/projectCompliance';
 import PermissionGate from '../../components/PermissionGate';
-import { Plus, Filter, ChevronRight, ChevronLeft, Calendar, FileText, CheckCircle, BarChart3, Clock, AlertTriangle, Layers, Maximize2, Search, LayoutGrid, List as ListIcon, ArrowUpDown, Download, Upload, FileSpreadsheet, Building2 } from 'lucide-react';
+import { Plus, Filter, ChevronRight, ChevronLeft, Calendar, FileText, CheckCircle, BarChart3, Clock, AlertTriangle, Layers, Maximize2, Search, LayoutGrid, List as ListIcon, ArrowUpDown, Download, Upload, FileSpreadsheet, Building2, X } from 'lucide-react';
 import { Skeleton } from '../../components/ui/Skeleton';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { CreateProjectModal } from './components/CreateProjectModal';
@@ -115,10 +115,6 @@ const ProjectList: React.FC = () => {
     const { can } = usePermissionCheck();
     const systemRoleCheck = usePermissionCheck();
     
-    console.log('[DEBUG-ProjectList] systemRole:', systemRoleCheck.systemRole);
-    console.log('[DEBUG-ProjectList] can("projects", "create"):', can('projects', 'create'));
-    console.log('[DEBUG-ProjectList] loading:', systemRoleCheck.loading);
-
     const {
         searchQuery, setSearchQuery,
         sortBy, setSortBy,
@@ -308,17 +304,17 @@ const ProjectList: React.FC = () => {
                     current_status: currentStatusLabel,
                     location_code: proj.LocationCode || '',
                     sector: proj.Sector || '',
-                    policy_level: proj.PolicyDecisionLevel || '',
-                    policy_number: proj.PolicyDecisionNumber || '',
-                    policy_date: proj.PolicyDecisionDate || '',
+                    policy_level: '', // Deprecated field
+                    policy_number: '', // Deprecated field
+                    policy_date: '', // Deprecated field
                     management_board: boardLabel,
                     old_investor: proj.OldInvestor || '',
                     transfer_decision: proj.TransferDecision || '',
                     start_date: proj.StartDate || '',
                     expected_end_date: proj.ExpectedEndDate || '',
                     actual_end_date: proj.ActualEndDate || '',
-                    progress: proj.Progress || 0,
-                    payment_progress: proj.PaymentProgress || 0,
+                    progress: proj.ComputedStats?.PhysicalProgress || 0,
+                    payment_progress: proj.ComputedStats?.PaymentProgress || 0,
                 });
 
                 row.height = 22;
@@ -374,7 +370,6 @@ const ProjectList: React.FC = () => {
             const wb = new ExcelJS.Workbook();
             const ws = wb.addWorksheet('Mau_Import_DuAn');
 
-            // Columns definition (54 columns in total)
             ws.columns = [
                 { header: 'Tên dự án (*)', key: 'project_name', width: 35 },
                 { header: 'Mã dự án (Mã QHNS - chỉ điền khi muốn cập nhật)', key: 'project_id', width: 25 },
@@ -409,7 +404,6 @@ const ProjectList: React.FC = () => {
                 { header: 'Số QĐ phê duyệt thiết kế - dự toán', key: 'design_approval_number', width: 25 },
                 { header: 'Ngày phê duyệt thiết kế - dự toán (YYYY-MM-DD)', key: 'design_approval_date', width: 25 },
                 { header: 'Cơ quan thẩm định thiết kế - dự toán', key: 'design_approval_authority', width: 25 },
-                { header: 'Tổng dự toán phê duyệt (VNĐ)', key: 'total_estimate', width: 22 },
                 { header: 'Phòng QLDA (Phòng 1/Phòng 2/Phòng 3/Phòng Phát triển dịch vụ)', key: 'management_board', width: 25 },
                 { header: 'Chủ đầu tư cũ', key: 'old_investor', width: 25 },
                 { header: 'Quyết định điều chuyển', key: 'transfer_decision', width: 25 },
@@ -419,14 +413,6 @@ const ProjectList: React.FC = () => {
                 { header: 'Thực tế kết thúc (YYYY-MM-DD)', key: 'actual_end_date', width: 25 },
                 { header: 'Tiến độ vật lý (%)', key: 'progress', width: 18 },
                 { header: 'Tiến độ giải ngân (%)', key: 'payment_progress', width: 20 },
-                { header: 'Quy mô - Diện tích khu đất (m2)', key: 'site_area', width: 25 },
-                { header: 'Quy mô - Diện tích xây dựng (m2)', key: 'construction_area', width: 25 },
-                { header: 'Quy mô - Diện tích sàn (m2)', key: 'floor_area', width: 25 },
-                { header: 'Quy mô - Chiều cao công trình (m)', key: 'building_height', width: 25 },
-                { header: 'Quy mô - Mật độ xây dựng (%)', key: 'building_density', width: 25 },
-                { header: 'Quy mô - Hệ số sử dụng đất', key: 'land_use_coefficient', width: 25 },
-                { header: 'Quy mô - Số tầng nổi', key: 'above_ground_floors', width: 20 },
-                { header: 'Quy mô - Số tầng hầm', key: 'basement_floors', width: 20 },
                 { header: 'Nhân sự - Kế toán theo dõi', key: 'mgmt_accountant', width: 25 },
                 { header: 'Nhân sự - Giám đốc QLDA', key: 'mgmt_director', width: 25 },
                 { header: 'Nhân sự - Cán bộ kỹ thuật', key: 'mgmt_tech', width: 25 },
@@ -507,7 +493,6 @@ const ProjectList: React.FC = () => {
                 design_approval_number: '789/QĐ-SXD',
                 design_approval_date: '2025-05-10',
                 design_approval_authority: 'Sở Xây dựng Hà Tĩnh',
-                total_estimate: 145000000000,
                 management_board: 'Phòng 1',
                 old_investor: 'Ban QLDA Huyện Y',
                 transfer_decision: '1011/QĐ-UBND',
@@ -517,14 +502,6 @@ const ProjectList: React.FC = () => {
                 actual_end_date: '',
                 progress: 35,
                 payment_progress: 28,
-                site_area: 55000,
-                construction_area: 12000,
-                floor_area: 24000,
-                building_height: 12.5,
-                building_density: 21.8,
-                land_use_coefficient: 0.44,
-                above_ground_floors: 3,
-                basement_floors: 0,
                 mgmt_accountant: 'Võ Thị Kim Ngân',
                 mgmt_director: 'Nguyễn Quang Linh',
                 mgmt_tech: 'Lê Hoàng Nam',
@@ -542,7 +519,7 @@ const ProjectList: React.FC = () => {
                 cell.alignment = { vertical: 'middle', wrapText: true };
                 
                 // Format numbers for currency columns
-                if ([6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 34].includes(cellNumber)) {
+                if ([6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].includes(cellNumber)) {
                     cell.numFmt = '#,##0';
                     cell.font = { name: 'Times New Roman', size: 9, italic: true, color: { argb: 'FF808080' } };
                 }
@@ -610,8 +587,8 @@ const ProjectList: React.FC = () => {
                     error: 'Vui lòng chọn Lĩnh vực từ danh sách.'
                 };
 
-                // Phòng QLDA (Cột AI / Index 34 / Cell AI{r})
-                ws.getCell(`AI${r}`).dataValidation = {
+                // Phòng QLDA (Cột AH / Index 34 / Cell AH{r})
+                ws.getCell(`AH${r}`).dataValidation = {
                     type: 'list',
                     allowBlank: true,
                     formulae: ['"Phòng 1,Phòng 2,Phòng 3,Phòng Phát triển dịch vụ"'],
@@ -646,6 +623,25 @@ const ProjectList: React.FC = () => {
                         {/* Filters on the left */}
                         <div className="flex flex-wrap items-center gap-2 flex-1 w-full lg:w-auto">
                             <ProjectFilters />
+                            <div className="relative w-full sm:w-64">
+                                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-txt-placeholder w-3.5 h-3.5" />
+                                <input
+                                    type="text"
+                                    placeholder="Tìm kiếm dự án..."
+                                    value={searchQuery}
+                                    onChange={e => setSearchQuery(e.target.value)}
+                                    className="pl-8 pr-8 h-8 w-full text-xs rounded-lg border border-border bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500/20 outline-none transition-all shadow-sm"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery('')}
+                                        className="absolute right-2.5 top-1/2 -translate-y-1/2 text-txt-placeholder hover:text-txt-primary cursor-pointer flex items-center"
+                                        aria-label="Xóa tìm kiếm"
+                                    >
+                                        <X className="w-3.5 h-3.5" />
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         {/* Actions on the right */}
@@ -875,15 +871,15 @@ const ProjectList: React.FC = () => {
                                                         {/* Tiến độ */}
                                                         <td className="px-4 py-4 text-right">
                                                             <div className="flex flex-col items-end gap-1">
-                                                                <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400 tabular-nums">{project.Progress || 0}%</span>
-                                                                <ProgressBar value={project.Progress || 0} color="blue" size="sm" className="w-16" />
+                                                                <span className="text-xs font-mono font-bold text-blue-600 dark:text-blue-400 tabular-nums">{project.ComputedStats?.PhysicalProgress || 0}%</span>
+                                                                <ProgressBar value={project.ComputedStats?.PhysicalProgress || 0} color="blue" size="sm" className="w-16" />
                                                             </div>
                                                         </td>
                                                         {/* Giải ngân */}
                                                         <td className="px-4 py-4 text-right">
                                                             <div className="flex flex-col items-end gap-1">
-                                                                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{project.PaymentProgress || 0}%</span>
-                                                                <ProgressBar value={project.PaymentProgress || 0} color="emerald" size="sm" className="w-16" />
+                                                                <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{project.ComputedStats?.PaymentProgress || 0}%</span>
+                                                                <ProgressBar value={project.ComputedStats?.PaymentProgress || 0} color="emerald" size="sm" className="w-16" />
                                                             </div>
                                                         </td>
                                                         {/* Tổng mức ĐT */}

@@ -41,7 +41,6 @@ export const ProjectCreateSchema = z.object({
     IsODA: z.boolean().default(false),
 
     // Optional fields
-    DecisionMakerID: z.coerce.number().int().optional(),
     ProjectNumber: z.string().optional(),
     Objective: z.string().max(2000, 'Mục tiêu đầu tư không quá 2000 ký tự').optional(),
     CompetentAuthority: z.string().optional(),
@@ -58,15 +57,6 @@ export const ProjectCreateSchema = z.object({
     ManagementBoard: z.coerce.number().int().min(1).max(7).optional(),
     ProvinceCode: z.string().optional(),
     SpecialtyType: z.string().optional(),
-    SpecialtyDetails: z.string().optional(),
-
-    // Quy mô công trình
-    SiteArea: z.coerce.number().min(0).optional(),
-    ConstructionArea: z.coerce.number().min(0).optional(),
-    FloorArea: z.coerce.number().min(0).optional(),
-    BuildingHeight: z.coerce.number().min(0).optional(),
-    AboveGroundFloors: z.coerce.number().int().min(0).optional(),
-    BasementFloors: z.coerce.number().int().min(0).optional(),
 
     Coordinates: z.object({
         lat: z.number(),
@@ -117,11 +107,10 @@ export const ProjectModalFormSchema = z.object({
     ApprovalDate: z.string(),
     DecisionNumber: z.string(),
 
-    // Quyết định chủ trương đầu tư
-    PolicyDecisionLevel: z.string(),
-    PolicyDecisionNumber: z.string(),
-    PolicyDecisionDate: z.string(),
-    PolicyDecisionAuthority: z.string(),
+    // Chủ trương đầu tư
+    PolicyDecisionNumber: z.string().optional(),
+    PolicyDecisionAuthority: z.string().optional(),
+    PolicyDecisionDate: z.string().optional(),
 
     // Phê duyệt dự án
     DecisionAuthority: z.string(),
@@ -130,26 +119,6 @@ export const ProjectModalFormSchema = z.object({
     // Mục tiêu & Quy mô
     Objective: z.string(),
     InvestmentScale: z.string(),
-
-    // Quy mô công trình
-    TotalEstimate: z.coerce.number().min(0),
-    SiteArea: z.coerce.number().min(0),
-    ConstructionArea: z.coerce.number().min(0),
-    FloorArea: z.coerce.number().min(0),
-    BuildingHeight: z.coerce.number().min(0),
-    BuildingDensity: z.coerce.number().min(0),
-    LandUseCoefficient: z.coerce.number().min(0),
-    AboveGroundFloors: z.coerce.number().int().min(0).optional(),
-    BasementFloors: z.coerce.number().int().min(0).optional(),
-
-    // Cơ cấu nguồn vốn chi tiết
-    BudgetAllocations: z.object({
-        BudgetNSTW: z.coerce.number().min(0),
-        BudgetNSDiaphuong: z.coerce.number().min(0),
-        BudgetLoan: z.coerce.number().min(0),
-        BudgetODA: z.coerce.number().min(0),
-        BudgetOtherNSNN: z.coerce.number().min(0),
-    }),
 
     // Hạng mục chi phí (JSONB)
     CostBreakdown: z.record(z.string(), z.coerce.number()),
@@ -162,12 +131,8 @@ export const ProjectModalFormSchema = z.object({
     BiddingForm: z.string().optional(),
 
     // ── JSONB groups ──
-    KHVInfo: z.record(z.string(), z.unknown()).optional(),
-    ImplementationTracking: z.record(z.string(), z.unknown()).optional(),
-    AdjustedApproval: z.record(z.string(), z.unknown()).optional(),
     ContractorDetails: z.record(z.string(), z.unknown()).optional(),
     ProjectManagement: z.record(z.string(), z.unknown()).optional(),
-    ProjectStatusInfo: z.record(z.string(), z.unknown()).optional(),
 
     // ── Tab Status: Hiện trạng & Bàn giao ──
     DecisionLevelBeforeHandover: z.string().optional(),
@@ -175,7 +140,6 @@ export const ProjectModalFormSchema = z.object({
     TransferDecision: z.string().optional(),
     CurrentStatusCode: z.number().int().min(1).max(10).nullable().optional(),
     SpecialtyType: z.string().optional(),
-    SpecialtyDetails: z.string().optional(),
 
     // Giai đoạn dự án (Chuẩn bị / Thực hiện / Kết thúc)
     Stage: z.string().optional(),
@@ -196,3 +160,4 @@ export const ProjectModalFormSchema = z.object({
 });
 
 export type ProjectModalFormValues = z.infer<typeof ProjectModalFormSchema>;
+

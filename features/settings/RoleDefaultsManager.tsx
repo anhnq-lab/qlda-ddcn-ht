@@ -263,13 +263,12 @@ const RoleDefaultsManager: React.FC = () => {
 
     return (
         <div className="space-y-6">
-            {/* Lưu ý 3 lớp phân quyền */}
+            {/* Lưu ý phân quyền */}
             <div className="flex items-start gap-3 px-4 py-3 bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 rounded-xl text-xs">
                 <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                 <p className="text-amber-800 dark:text-amber-300">
-                    Đây là quyền <strong>theo vai trò (Lớp 1)</strong>. Một số quyền còn bị siết thêm bởi
-                    <strong> Giới hạn theo phòng (Lớp 2)</strong> — vd chỉ KH-ĐT tạo dự án, chỉ HC-TH sửa nhân sự/lịch/quy chế —
-                    và <strong>theo thành viên dự án (Lớp 3)</strong> cho việc Sửa dự án. Xem tab <em>“Giới hạn theo phòng”</em>.
+                    Đây là quyền <strong>theo vai trò (ma trận quyền)</strong>. Riêng <strong>Sửa dự án</strong> còn bị siết thêm
+                    <strong> theo thành viên dự án</strong> — chỉ người tạo hoặc thành viên dự án mới được sửa.
                 </p>
             </div>
 

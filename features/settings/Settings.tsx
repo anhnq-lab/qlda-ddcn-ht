@@ -7,7 +7,6 @@ import { useTabSearchParam } from '../../hooks/useTabSearchParam';
 const UserAccountManager = React.lazy(() => import('./components/admin/UserAccountManager'));
 const PermissionManager = React.lazy(() => import('./PermissionManager'));
 const RoleDefaultsManager = React.lazy(() => import('./RoleDefaultsManager'));
-const DepartmentRuleManager = React.lazy(() => import('./DepartmentRuleManager'));
 const ProjectFieldPermissionManager = React.lazy(() => import('./ProjectFieldPermissionManager'));
 const ContractorAccountManager = React.lazy(() => import('./components/admin/ContractorAccountManager'));
 const AuditLogViewer = React.lazy(() => import('./components/admin/AuditLogViewer'));
@@ -20,7 +19,7 @@ const LeadershipAssignmentManager = React.lazy(() => import('./LeadershipAssignm
 // SETTINGS — Unified Admin Control Panel
 // ============================================================
 
-type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'dept-rules' | 'project-fields' | 'permissions' | 'leadership' | 'dashboard-widgets' | 'sidebar-modules' | 'audit-log' | 'tools';
+type TabKey = 'accounts' | 'contractors' | 'role-defaults' | 'project-fields' | 'permissions' | 'leadership' | 'dashboard-widgets' | 'sidebar-modules' | 'audit-log' | 'tools';
 
 interface TabDef {
     key: TabKey;
@@ -32,7 +31,6 @@ const TABS: TabDef[] = [
     { key: 'accounts', label: 'Tài khoản', icon: Users },
     { key: 'contractors', label: 'Nhà thầu', icon: Building2 },
     { key: 'role-defaults', label: 'Ma trận quyền', icon: ShieldCheck },
-    { key: 'dept-rules', label: 'Giới hạn theo phòng', icon: Building2 },
     { key: 'project-fields', label: 'Quyền trường dự án', icon: SlidersHorizontal },
     { key: 'permissions', label: 'Quyền cá nhân', icon: Shield },
     { key: 'leadership', label: 'Phân công lãnh đạo', icon: Award },
@@ -51,7 +49,7 @@ const Settings: React.FC = () => {
     // Sync tab ↔ URL
     const [activeTab, setActiveTab] = useTabSearchParam<TabKey>(
         'accounts',
-        ['accounts', 'contractors', 'role-defaults', 'dept-rules', 'project-fields', 'permissions', 'leadership', 'dashboard-widgets', 'sidebar-modules', 'audit-log', 'tools'] as const,
+        ['accounts', 'contractors', 'role-defaults', 'project-fields', 'permissions', 'leadership', 'dashboard-widgets', 'sidebar-modules', 'audit-log', 'tools'] as const,
         'tab'
     );
 
@@ -135,11 +133,6 @@ const Settings: React.FC = () => {
                     {activeTab === 'role-defaults' && (
                         <div className="p-6 lg:p-8 h-full flex flex-col min-h-0">
                             <RoleDefaultsManager />
-                        </div>
-                    )}
-                    {activeTab === 'dept-rules' && (
-                        <div className="p-6 lg:p-8 h-full overflow-y-auto">
-                            <DepartmentRuleManager />
                         </div>
                     )}
                     {activeTab === 'project-fields' && (

@@ -68,13 +68,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = React.memo(({ project, on
         : null;
 
     const totalInvestment = project.TotalInvestment || 0;
-    const khv = project.KHVInfo?.total || 0;
-    const disbursed = project.ImplementationTracking?.totalDisbursed || 0;
-    const volume = project.ImplementationTracking?.totalVolume || 0;
+    const khv = project.ComputedStats?.KHVTotal || 0;
+    const disbursed = project.ComputedStats?.TotalDisbursed || 0;
+    const volume = 0; // TODO: [refactor] Integrate volume stats from RPC or DB
 
     const khvPercent = totalInvestment > 0 ? Math.min(100, (khv / totalInvestment) * 100) : 0;
     const disbursedPercent = khv > 0 ? Math.min(100, (disbursed / khv) * 100) : 0;
-    const volumePercent = project.ImplementationTracking?.volumeRate || project.Progress || 0;
+    const volumePercent = project.ComputedStats?.PhysicalProgress || 0;
 
     if (layout === 'list') {
         return (

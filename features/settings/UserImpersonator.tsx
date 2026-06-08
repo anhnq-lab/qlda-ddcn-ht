@@ -12,10 +12,7 @@ import {
     ROLE_LABELS,
     ROLE_COLORS,
     DEFAULT_ROLE_PERMISSIONS,
-    DEFAULT_DEPARTMENT_RULES,
-    departmentMatches,
     resolveSystemRole,
-    type DepartmentRule,
     type PermissionResource,
     type PermissionAction,
     type SystemRole,
@@ -70,7 +67,6 @@ const UserImpersonator: React.FC = () => {
     const [activeTab, setActiveTab] = useState<UserTab>('employees');
     const [selectedRoleFilter, setSelectedRoleFilter] = useState<string>('all');
     const [permissionSearch, setPermissionSearch] = useState('');
-    const [deptRules, setDeptRules] = useState<DepartmentRule[]>(DEFAULT_DEPARTMENT_RULES);
     const { impersonatedUser, isImpersonating, startImpersonation, stopImpersonation,
         minutesRemaining, expiryWarning, extendSession } = useImpersonation();
 
@@ -131,20 +127,6 @@ const UserImpersonator: React.FC = () => {
             setLoading(false);
         };
         fetchData();
-
-        // Nạp rule Lớp 2 (giới hạn theo phòng) để preview phản ánh đúng
-        (async () => {
-            try {
-                const { data, error } = await (supabase as any)
-                    .from('department_permission_rules')
-                    .select('resource, action, allowed_departments');
-                if (!error && Array.isArray(data)) {
-                    setDeptRules(data.map((r: any) => ({
-                        resource: r.resource, action: r.action, allowedDepartments: r.allowed_departments || [],
-                    })));
-                }
-            } catch { /* dùng hằng số */ }
-        })();
     }, []);
 
     // Helper: Lấy SystemRole thực tế của nhân viên
@@ -406,23 +388,7 @@ const UserImpersonator: React.FC = () => {
     }, [impersonatedUser]);
 
     const systemRole = previewRole;
-    // Áp Lớp 2 (giới hạn theo phòng) vào preview theo phòng của người bị giả lập.
-    const permissions = useMemo(() => {
-        if (!previewPerms) return previewPerms;
-        const LEADERSHIP: SystemRole[] = ['super_admin', 'director', 'deputy_director', 'chief_accountant'];
-        if (!previewRole || LEADERSHIP.includes(previewRole)) return previewPerms; // lãnh đạo bypass
-        const dept = impersonatedUser?.Department;
-        const narrowed: Partial<Record<PermissionResource, PermissionAction[]>> = {};
-        (Object.keys(previewPerms) as PermissionResource[]).forEach(res => {
-            const acts = (previewPerms as any)[res] || [];
-            narrowed[res] = acts.filter((a: PermissionAction) => {
-                const rules = deptRules.filter(r => r.resource === res && r.action === a);
-                if (rules.length === 0) return true;
-                return rules.some(r => departmentMatches(dept, r.allowedDepartments));
-            });
-        });
-        return narrowed;
-    }, [previewPerms, previewRole, impersonatedUser, deptRules]);
+    const permissions = previewPerms;
 
     // Lọc các resource trong preview theo ô tìm kiếm permissionSearch
     const filteredModuleGroups = useMemo(() => {
@@ -597,7 +563,7 @@ const UserImpersonator: React.FC = () => {
                                     </h4>
                                     <p className="text-xs text-txt-muted mt-1 flex items-center gap-1.5">
                                         <ShieldAlert size={12} className="text-amber-500" />
-                                        Đã áp giới hạn theo phòng (Lớp 2). Riêng <strong>Sửa dự án</strong> còn tùy theo việc có là thành viên dự án hay không (Lớp 3 — tùy từng dự án). RLS cơ sở dữ liệu vẫn chạy dưới tài khoản Admin (chế độ xem trước).
+                                        Quyền theo ma trận vai trò. Riêng <strong>Sửa dự án</strong> còn tùy theo việc có là thành viên dự án hay không (Lớp 3 — tùy từng dự án). RLS cơ sở dữ liệu vẫn chạy dưới tài khoản Admin (chế độ xem trước).
                                     </p>
                                 </div>
                                 <div className="relative max-w-xs w-full">

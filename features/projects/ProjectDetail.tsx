@@ -226,6 +226,22 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, id]);
 
+    // Prefetch tab data on hover for faster tab switching
+    const handleTabHover = useCallback((tabId: string) => {
+        if (!id) return;
+        const prefetchMap: Record<string, { key: string[]; fn: () => Promise<any> }[]> = {
+            capital: [{ key: ['capital-plans', id], fn: () => import('@/services/CapitalService').then(m => m.CapitalService.getCapitalPlans(id!)) }],
+            packages: [{ key: ['bidding-packages', id], fn: () => ProjectService.getPackagesByProject(id!) }],
+            construction: [{ key: ['construction-logs', id], fn: () => import('@/services/ConstructionService').then(m => m.ConstructionService.getDailyLogs(id!)) }],
+        };
+        const entries = prefetchMap[tabId];
+        if (entries) {
+            entries.forEach(({ key, fn }) => {
+                queryClient.prefetchQuery({ queryKey: key, queryFn: fn, staleTime: 2 * 60 * 1000 });
+            });
+        }
+    }, [id, queryClient]);
+
     // Derived Data — use `id` from URL directly so these fire in parallel with the project fetch,
     // not after it (project?.ProjectID === id — same value, no need to wait for DB round trip)
     const { data: workflowTasks = [] } = useProjectTasks(id);
@@ -466,6 +482,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                             <button
                                 id={`tab-${t.id}`}
                                 key={t.id} onClick={() => setActiveTab(t.id)}
+                                onMouseEnter={() => handleTabHover(t.id)}
                                 className={`${inPanel ? 'py-2' : 'py-3'} px-3 text-xs font-black border-b-2 transition-all flex items-center gap-1.5 tracking-wider whitespace-nowrap ${isActive ? 'border-primary-500 text-txt-primary' : 'border-transparent text-txt-muted hover:text-txt-primary hover:border-border'}`}
                                 title={`${t.label} (← → chuyển tab)`}
                             >
@@ -485,6 +502,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
             {/* 3. Tab Content — Heavy tabs stay mounted after first visit */}
             {/* Light tabs: info, documents, tt24, inspection — mount/unmount normally */}
             {activeTab === 'info' && (
+                <ErrorBoundary>
                 <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3">
                     <div className="space-y-3">
                         <ProjectInfoTab
@@ -532,6 +550,7 @@ const ProjectDetail: React.FC<ProjectDetailProps> = ({ projectId: propProjectId,
                         />
                     </div>
                 </div>
+                </ErrorBoundary>
             )}
             {activeTab === 'documents' && (
                 <ErrorBoundary>

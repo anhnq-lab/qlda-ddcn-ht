@@ -128,7 +128,7 @@ async function buildBC01(wb: ExcelJS.Workbook, source: ExcelReportSource) {
             p.ManagementBoard || '—',
             statusLabel,
             p.TotalInvestment / 1_000_000_000,
-            p.Progress || 0,
+            p.ComputedStats?.PhysicalProgress || 0,
             toDate(p.StartDate),
             toDate(p.ExpectedEndDate),
         ]);
@@ -144,7 +144,7 @@ async function buildBC01(wb: ExcelJS.Workbook, source: ExcelReportSource) {
         const progCell = row.getCell(6);
         applyDataCell(progCell, isAlt, 'center');
         progCell.numFmt = '0"%"';
-        const prog = p.Progress || 0;
+        const prog = p.ComputedStats?.PhysicalProgress || 0;
         progCell.font = {
             name: 'Calibri', size: 10, bold: true,
             color: { argb: prog >= 70 ? COLOR.goodGreen : prog >= 40 ? COLOR.warnAmber : COLOR.dangerRed }

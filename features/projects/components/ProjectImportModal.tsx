@@ -45,7 +45,6 @@ interface ImportProjectRow {
     designApprovalNumber: string;
     designApprovalDate: string | null;
     designApprovalAuthority: string;
-    totalEstimate: number;
     managementBoard: number | null;
     oldInvestor: string;
     transferDecision: string;
@@ -55,14 +54,6 @@ interface ImportProjectRow {
     actualEndDate: string | null;
     progress: number;
     paymentProgress: number;
-    siteArea: number;
-    constructionArea: number;
-    floorArea: number;
-    buildingHeight: number;
-    buildingDensity: number;
-    landUseCoefficient: number;
-    aboveGroundFloors: number;
-    basementFloors: number;
     mgmtAccountant: string;
     mgmtDirector: string;
     mgmtTech: string;
@@ -293,27 +284,18 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ onClose 
                 const designApprovalNumber = row[30];
                 const rawDesignApprovalDate = row[31];
                 const designApprovalAuthority = row[32];
-                const totalEstimate = Number(row[33]) || 0;
-                const rawManagementBoard = row[34];
-                const oldInvestor = row[35];
-                const transferDecision = row[36];
-                const decisionLevelBeforeHandover = row[37];
-                const rawStartDate = row[38];
-                const rawExpectedEndDate = row[39];
-                const rawActualEndDate = row[40];
-                const progress = Number(row[41]) || 0;
-                const paymentProgress = Number(row[42]) || 0;
-                const siteArea = Number(row[43]) || 0;
-                const constructionArea = Number(row[44]) || 0;
-                const floorArea = Number(row[45]) || 0;
-                const buildingHeight = Number(row[46]) || 0;
-                const buildingDensity = Number(row[47]) || 0;
-                const landUseCoefficient = Number(row[48]) || 0;
-                const aboveGroundFloors = Number(row[49]) || 0;
-                const basementFloors = Number(row[50]) || 0;
-                const mgmtAccountant = row[51];
-                const mgmtDirector = row[52];
-                const mgmtTech = row[53];
+                const rawManagementBoard = row[33];
+                const oldInvestor = row[34];
+                const transferDecision = row[35];
+                const decisionLevelBeforeHandover = row[36];
+                const rawStartDate = row[37];
+                const rawExpectedEndDate = row[38];
+                const rawActualEndDate = row[39];
+                const progress = Number(row[40]) || 0;
+                const paymentProgress = Number(row[41]) || 0;
+                const mgmtAccountant = row[42];
+                const mgmtDirector = row[43];
+                const mgmtTech = row[44];
 
                 // Bỏ qua dòng trống hoặc dòng hướng dẫn mẫu
                 if (!projectName || String(projectName).trim() === '' || String(projectName).includes('MẪU FILE') || String(projectName).includes('HƯỚNG DẪN')) {
@@ -390,7 +372,6 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ onClose 
                     designApprovalNumber: designApprovalNumber ? String(designApprovalNumber).trim() : '',
                     designApprovalDate,
                     designApprovalAuthority: designApprovalAuthority ? String(designApprovalAuthority).trim() : '',
-                    totalEstimate,
                     managementBoard,
                     oldInvestor: oldInvestor ? String(oldInvestor).trim() : '',
                     transferDecision: transferDecision ? String(transferDecision).trim() : '',
@@ -400,14 +381,6 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ onClose 
                     actualEndDate,
                     progress,
                     paymentProgress,
-                    siteArea,
-                    constructionArea,
-                    floorArea,
-                    buildingHeight,
-                    buildingDensity,
-                    landUseCoefficient,
-                    aboveGroundFloors,
-                    basementFloors,
                     mgmtAccountant: mgmtAccountant ? String(mgmtAccountant).trim() : '',
                     mgmtDirector: mgmtDirector ? String(mgmtDirector).trim() : '',
                     mgmtTech: mgmtTech ? String(mgmtTech).trim() : '',
@@ -485,7 +458,6 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ onClose 
                     DesignApprovalNumber: row.designApprovalNumber,
                     DesignApprovalDate: row.designApprovalDate,
                     DesignApprovalAuthority: row.designApprovalAuthority,
-                    TotalEstimate: row.totalEstimate,
                     ManagementBoard: row.managementBoard,
                     OldInvestor: row.oldInvestor,
                     TransferDecision: row.transferDecision,
@@ -495,14 +467,6 @@ export const ProjectImportModal: React.FC<ProjectImportModalProps> = ({ onClose 
                     ActualEndDate: row.actualEndDate,
                     Progress: row.progress,
                     PaymentProgress: row.paymentProgress,
-                    SiteArea: row.siteArea,
-                    ConstructionArea: row.constructionArea,
-                    FloorArea: row.floorArea,
-                    BuildingHeight: row.buildingHeight,
-                    BuildingDensity: row.buildingDensity,
-                    LandUseCoefficient: row.landUseCoefficient,
-                    AboveGroundFloors: row.aboveGroundFloors,
-                    BasementFloors: row.basementFloors,
                     ProjectManagement: projectManagement
                 };
 

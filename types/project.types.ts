@@ -139,7 +139,6 @@ export interface Project {
     ProjectName: string;
     GroupCode: ProjectGroup;
     InvestmentType: InvestmentType;
-    DecisionMakerID: number;
     TotalInvestment: number;
     DisbursedAmount?: number;
     CapitalSource: string;
@@ -148,15 +147,12 @@ export interface Project {
     Status: ProjectStatus;
     IsEmergency: boolean;
     ImageUrl?: string;
-    Progress?: number;
-    PaymentProgress?: number;
     InvestorName?: string;
     MainContractorName?: string;
     ConstructionType?: string;
     ConstructionGrade?: string;
     Members?: string[];
     ProjectNumber?: string;
-    Version?: string;
     Objective?: string;
     CompetentAuthority?: string;
     Duration?: string;
@@ -166,12 +162,6 @@ export interface Project {
     DecisionAuthority?: string;
     IsODA?: boolean;
     Coordinates?: { lat: number; lng: number; };
-    SyncStatus?: {
-        IsSynced: boolean;
-        LastSyncDate?: string;
-        NationalProjectCode?: string;
-        SyncError?: string;
-    };
     Stage?: ProjectStage;
     Sector?: ProjectSector;
     CalculatedGroup?: ProjectGroup;
@@ -179,52 +169,16 @@ export interface Project {
     FinancialProgress?: number;
     RequiresBIM?: boolean;
     BIMStatus?: 'NotRequired' | 'Pending' | 'EIRApproved' | 'BEPApproved' | 'Active';
-    CDEProjectCode?: string;
     ApplicableStandards?: string;
     FeasibilityContractor?: string;
     SurveyContractor?: string;
     ReviewContractor?: string;
     // TT24/2025/TT-BXD
     InvestmentScale?: string;
-    // Quy mô công trình
-    TotalEstimate?: number;
-    SiteArea?: number;
-    ConstructionArea?: number;
-    FloorArea?: number;
-    BuildingHeight?: number;
-    BuildingDensity?: number;
-    LandUseCoefficient?: number;
-    AboveGroundFloors?: number;
-    BasementFloors?: number;
-    PlanningApprovalNumber?: string;
-    PlanningApprovalDate?: string;
-    PCCCApprovalNumber?: string;
-    PCCCApprovalDate?: string;
-    PCCCApprovalAgency?: string;
-    EnvApprovalNumber?: string;
-    EnvApprovalDate?: string;
-    EnvApprovalType?: string;
-    AppraisalResultNumber?: string;
-    AppraisalResultDate?: string;
-    AppraisalAgency?: string;
     CostBreakdown?: CostBreakdown;
-    DesignAppraisalNumber?: string;
-    DesignAppraisalDate?: string;
-    DesignApprovalNumber?: string;
-    DesignApprovalDate?: string;
-    DesignApprovalAuthority?: string;
     DesignContractor?: string;
     SupervisionContractor?: string;
-    ConstructionPermitNumber?: string;
-    ConstructionPermitDate?: string;
-    ConstructionPermitAgency?: string;
-    ActualStartDateConstruction?: string;
-    InsuranceContract?: string;
-    InsuranceValue?: number;
-    AcceptanceResult?: string;
-    AcceptanceDate?: string;
     HandoverDate?: string;
-    TT24CompletionPct?: number;
     StartDate?: string;
     ExpectedEndDate?: string;
     ActualEndDate?: string;
@@ -234,60 +188,23 @@ export interface Project {
     OldInvestor?: string;
     TransferDecision?: string;
     CurrentStatusCode?: number;
-    // Quyết định chủ trương đầu tư
-    PolicyDecisionLevel?: string;     // Cấp quyết định: QH, CP, Thủ tướng, Bộ trưởng, UBND tỉnh
-    PolicyDecisionNumber?: string;    // Số QĐ chủ trương (CBT số)
-    PolicyDecisionDate?: string;      // Ngày ban hành QĐ chủ trương
-    PolicyDecisionAuthority?: string; // Cơ quan ban hành
-    // Cơ cấu nguồn vốn chi tiết
-    BudgetAllocations?: BudgetAllocations;
     // Hình thức thực hiện
     BiddingForm?: string;             // Hình thức lựa chọn nhà thầu
-    // Dữ liệu nhóm (JSONB)
-    KHVInfo?: KHVInfo;
-    ImplementationTracking?: ImplementationTracking;
-    AdjustedApproval?: AdjustedApproval;
     ContractorDetails?: ContractorDetails;
     ProjectManagement?: ProjectManagement;
-    ProjectStatusInfo?: ProjectStatusInfo;
     // Chuyên ngành dự án theo Phụ lục 2 Luật Đầu tư công 58/2024/QH15
     SpecialtyType?: 'transport_urban' | 'civil_industrial' | 'agriculture_rural' | 'mixed' | 'other' | '';
-    SpecialtyDetails?: string;
+    ComputedStats?: ProjectComputedStats;
 }
 
-/** Quyết định giao KHV + kế hoạch vốn */
-export interface KHVInfo {
-    decisionNumber?: string;    // Số QĐ giao KHV
-    decisionDate?: string;      // Ngày QĐ
-    fundingSourceCode?: string; // Mã nguồn
-    total?: number;             // Tổng KHV
-    year2025Extended?: number;  // 2025 kéo dài
-    year2026?: number;          // 2026
-}
-
-/** Theo dõi khối lượng & giải ngân */
-export interface ImplementationTracking {
-    totalVolume?: number;           // Tổng cộng KL thực hiện
-    ytdVolume?: number;             // Lũy kế đầu năm
-    periodVolume?: number;          // Thực hiện trong kỳ
-    volumeRate?: number;            // Tỷ lệ %
-    totalDisbursed?: number;        // Tổng cộng giải ngân
-    ytdDisbursed?: number;          // Lũy kế đầu năm (giải ngân)
-    periodDisbursed?: number;       // Giải ngân trong kỳ
-    disbursementRate?: number;      // Tỷ lệ giải ngân
-    remainingCapital?: number;      // KH vốn còn lại
-    completedNotDisbursed?: number; // KL hoàn thành chưa giải ngân
-}
-
-/** QĐ điều chỉnh dự án + thời gian điều chỉnh & thực tế */
-export interface AdjustedApproval {
-    decisionNumber?: string;  // Số QĐ phê duyệt điều chỉnh
-    decisionDate?: string;    // Ngày QĐ điều chỉnh
-    totalEstimate?: number;   // Tổng dự toán sau điều chỉnh
-    adjustedStartDate?: string; // Khởi công sau điều chỉnh
-    adjustedEndDate?: string;   // Hoàn thành sau điều chỉnh
-    actualStartDate?: string;   // Thực tế khởi công
-    actualEndDate?: string;     // Thực tế hoàn thành
+/** Thống kê tổng hợp dự án — từ RPC get_project_computed_stats */
+export interface ProjectComputedStats {
+    ProjectID: string;
+    KHVTotal: number;
+    TotalDisbursed: number;
+    DisbursementRate: number;
+    PhysicalProgress: number;
+    PaymentProgress: number;
 }
 
 /** Đơn vị thực hiện (nhà thầu thi công) */
@@ -313,30 +230,6 @@ export interface ProjectManagement {
     gia_tri_khoi_luong_ban_giao?: number;
 }
 
-/** Hiện trạng & tình hình dự án */
-export interface ProjectStatusInfo {
-    isSettled?: boolean;                // Đã hoàn thành Quyết toán
-    isHandedOverNotSettled?: boolean;   // Đã nghiệm thu Bàn giao chưa QT
-    isCompletedNotHandedOver?: boolean; // Đã hoàn thành chưa bàn giao
-    auditStatus?: string;               // Tình hình thanh tra kiểm toán
-    delayReason?: string;               // Nguyên nhân chậm tiến độ
-    delayResponsibility?: string;       // Trách nhiệm
-    delayResolution?: string;           // Kết quả xử lý
-    delayRecommendation?: string;       // Kiến nghị, đề xuất giải pháp
-    notes?: string;                     // Ghi chú
-    cong_no_den_30_6_2025?: number;
-    tinh_trang_quyet_toan_den_30_6_2025?: string;
-    ton_tai_vuong_mac_ban_giao?: string;
-    cong_no_sau_ban_giao?: number;
-    tinh_trang_quyet_toan_sau_ban_giao?: string;
-    cham_tien_do?: {
-        thoi_gian_hoan_thanh?: string;
-        thoi_gian_cham?: string;
-        nguyen_nhan?: string;
-        bien_phap_da_ap_dung?: string;
-        kien_nghi_de_xuat?: string;
-    };
-}
 
 /** Chi tiết tổng mức đầu tư — TT24 A.II.7.4 */
 export interface CostBreakdown {
@@ -349,14 +242,7 @@ export interface CostBreakdown {
     contingency?: number;   // Dự phòng
 }
 
-/** Cơ cấu nguồn vốn chi tiết */
-export interface BudgetAllocations {
-    BudgetNSTW?: number;              // Ngân sách Trung ương
-    BudgetNSDiaphuong?: number;       // Ngân sách địa phương
-    BudgetLoan?: number;              // Vốn vay
-    BudgetODA?: number;               // Vốn ODA/nước ngoài
-    BudgetOtherNSNN?: number;         // Vốn khác ngoài NSNN
-}
+// BudgetAllocations — đã xóa, dữ liệu cơ cấu vốn lấy từ capital_plans
 
 /** Quyết định phê duyệt chủ trương đầu tư */
 export interface InvestmentPolicyDecision {
@@ -407,7 +293,7 @@ export interface ProjectExtended extends Project {
     FinancialProgress: number;
     RequiresBIM: boolean;
     BIMStatus: 'NotRequired' | 'Pending' | 'EIRApproved' | 'BEPApproved' | 'Active';
-    CDEProjectCode?: string;
+    ComputedStats?: ProjectComputedStats;
 }
 
 export interface ConstructionWork {

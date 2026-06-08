@@ -1,31 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
     Map, 
-    FileText, 
     Home, 
-    Users, 
     CreditCard, 
-    CheckCircle2, 
-    Circle, 
-    Clock, 
     AlertCircle,
-    ChevronDown,
-    ChevronUp,
     RefreshCw,
     Pencil,
     Save,
-    X,
     Plus
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { formatCurrency, formatNumber } from '@/utils/format';
-import { SiteClearance, SiteClearanceMilestone, UpdateSiteClearanceDTO, UpdateClearanceMilestoneDTO } from '@/types';
+import { formatNumber } from '@/utils/format';
+import { SiteClearance } from '@/types';
 import { 
     useSiteClearance, 
     useInitializeClearance, 
-    useUpdateSiteClearance, 
-    useSiteClearanceMilestones, 
-    useUpdateClearanceMilestone 
+    useUpdateSiteClearance
 } from '../../hooks/useSiteClearance';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
@@ -41,12 +31,11 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
     const canEdit = ['admin', 'manager', 'director', 'deputy_director', 'super_admin'].includes(userRole);
 
     const { data: clearance, isLoading: isClearanceLoading } = useSiteClearance(projectId);
-    const { data: milestones, isLoading: isMilestonesLoading } = useSiteClearanceMilestones(projectId);
     const initializeClearance = useInitializeClearance();
 
     const [isEditingGlobal, setIsEditingGlobal] = useState(false);
 
-    if (isClearanceLoading || isMilestonesLoading) {
+    if (isClearanceLoading) {
         return (
             <div className="flex justify-center items-center h-64">
                 <LoadingSpinner size="lg" />
@@ -60,7 +49,7 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
                 <Map className="w-12 h-12 text-txt-muted mb-4" />
                 <h3 className="text-lg font-medium text-txt-primary mb-2">Chưa có thông tin Giải phóng mặt bằng</h3>
                 <p className="text-txt-muted text-center max-w-md mb-6 text-sm">
-                    Dự án này chưa được khởi tạo dữ liệu quản lý GPMB (16 bước theo hướng dẫn 3254).
+                    Dự án này chưa được khởi tạo thông tin quản lý Giải phóng mặt bằng.
                 </p>
                 {canEdit && (
                     <button 
@@ -69,7 +58,7 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
                         className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-sm transition-colors flex items-center gap-2"
                     >
                         {initializeClearance.isPending ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                        Khởi tạo Quy trình GPMB
+                        Khởi tạo Thông tin GPMB
                     </button>
                 )}
             </div>
@@ -80,7 +69,7 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
         return (
             <div className="flex flex-col justify-center items-center h-64">
                 <LoadingSpinner size="lg" />
-                <p className="mt-4 text-slate-500">Đang khởi tạo quy trình 16 bước...</p>
+                <p className="mt-4 text-slate-500">Đang khởi tạo thông tin GPMB...</p>
             </div>
         );
     }
@@ -91,9 +80,9 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
                 <div>
                     <h2 className="text-lg font-bold text-txt-primary flex items-center gap-2">
                         <Map className="w-5 h-5 text-emerald-500" />
-                        Quản lý Giải phóng mặt bằng
+                        Ghi nhận Thông tin GPMB
                     </h2>
-                    <p className="text-xs text-txt-muted mt-1">Theo dõi tiến độ thu hồi đất và 16 bước thủ tục GPMB</p>
+                    <p className="text-xs text-txt-muted mt-1">Quản lý số liệu bồi thường, tái định cư và tiến độ bàn giao mặt bằng</p>
                 </div>
                 {canEdit && (
                     <button 
@@ -148,39 +137,6 @@ export const ProjectClearanceTab: React.FC<ProjectClearanceTabProps> = ({ projec
                     />
                 </div>
             )}
-
-            {/* 16 Steps Timeline */}
-            <div className="bg-bg-surface rounded-2xl border border-border overflow-hidden shadow-sm mt-6">
-                <div className="px-5 py-4 border-b border-border bg-bg-muted/30">
-                    <h3 className="font-semibold text-txt-primary flex items-center gap-2 text-sm">
-                        <FileText className="w-4 h-4 text-txt-muted" />
-                        Quy trình thực hiện 16 bước
-                    </h3>
-                </div>
-                <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-400px)]">
-                    <table className="w-full">
-                        <thead className="sticky top-0 z-10 bg-bg-muted text-[10px] font-black uppercase tracking-widest border-b border-border shadow-sm">
-                            <tr>
-                                <th className="px-3 py-3 w-16 text-center text-txt-muted">Bước</th>
-                                <th className="px-4 py-3 text-left min-w-[300px] text-txt-muted">Nội dung công việc</th>
-                                <th className="px-4 py-3 text-center w-32 text-txt-muted">Trạng thái</th>
-                                <th className="px-4 py-3 text-center w-32 text-txt-muted">Ngày HT</th>
-                                {canEdit && <th className="px-4 py-3 text-center w-24 text-txt-muted">Thao tác</th>}
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border">
-                            {milestones?.map((milestone) => (
-                                <MilestoneRow 
-                                    key={milestone.id} 
-                                    milestone={milestone} 
-                                    canEdit={canEdit}
-                                    projectId={projectId}
-                                />
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     );
 };
@@ -281,152 +237,3 @@ const ClearanceGlobalEditor = ({ clearance, projectId, onClose }: { clearance: S
         </form>
     );
 };
-
-const MilestoneRow = ({ milestone, canEdit, projectId }: { milestone: SiteClearanceMilestone, canEdit: boolean, projectId: string }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const updateMilestone = useUpdateClearanceMilestone(projectId);
-    const [formData, setFormData] = useState({
-        status: milestone.status,
-        completed_date: milestone.completed_date || '',
-        notes: milestone.notes || ''
-    });
-
-    const getStatusIcon = (status: string) => {
-        switch(status) {
-            case 'completed': return <CheckCircle2 className="w-4 h-4 text-emerald-500" />;
-            case 'in_progress': return <Clock className="w-4 h-4 text-blue-500" />;
-            case 'blocked': return <AlertCircle className="w-4 h-4 text-red-500" />;
-            default: return <Circle className="w-4 h-4 text-slate-300 dark:text-slate-600" />;
-        }
-    };
-
-    const getStatusText = (status: string) => {
-        switch(status) {
-            case 'completed': return 'Hoàn thành';
-            case 'in_progress': return 'Đang thực hiện';
-            case 'blocked': return 'Vướng mắc';
-            default: return 'Chưa bắt đầu';
-        }
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await updateMilestone.mutateAsync({
-            milestoneId: milestone.id,
-            updates: {
-                status: formData.status as any,
-                completed_date: formData.completed_date || null,
-                notes: formData.notes
-            }
-        });
-        setIsEditing(false);
-    };
-
-    if (isEditing) {
-        const inputCls = "text-xs px-3 py-2 border border-border rounded-xl bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all";
-        return (
-            <tr className="bg-bg-muted/50 border-b border-border">
-                <td className="px-3 py-3.5 text-center font-mono text-xs text-txt-muted">{milestone.step_number}</td>
-                <td colSpan={canEdit ? 4 : 3} className="px-4 py-3.5">
-                    <form onSubmit={handleSubmit} className="flex flex-wrap gap-3 items-center w-full">
-                        <div className="flex-1 min-w-[200px]">
-                            <p className="text-sm font-bold text-txt-primary mb-2">{milestone.step_name}</p>
-                            <input 
-                                type="text" 
-                                value={formData.notes} 
-                                onChange={e => setFormData({...formData, notes: e.target.value})}
-                                className="w-full text-xs px-3 py-2 border border-border rounded-xl bg-bg-surface text-txt-primary focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none" 
-                                placeholder="Nhập ghi chú..."
-                            />
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <select 
-                                value={formData.status} 
-                                onChange={e => setFormData({...formData, status: e.target.value as any})}
-                                className={inputCls}
-                            >
-                                <option value="pending">Chưa bắt đầu</option>
-                                <option value="in_progress">Đang thực hiện</option>
-                                <option value="completed">Hoàn thành</option>
-                                <option value="blocked">Vướng mắc</option>
-                            </select>
-                            <input 
-                                type="date" 
-                                value={formData.completed_date} 
-                                onChange={e => setFormData({...formData, completed_date: e.target.value})}
-                                className={`${inputCls} w-36`} 
-                            />
-                            <div className="flex gap-2">
-                                <button type="button" onClick={() => setIsEditing(false)} className="px-3 py-2 bg-bg-surface border border-border text-txt-secondary hover:bg-bg-muted rounded-xl transition-colors text-xs font-bold">
-                                    Hủy
-                                </button>
-                                <button type="submit" disabled={updateMilestone.isPending} className="px-3 py-2 bg-primary-600 text-white hover:bg-primary-700 rounded-xl transition-colors flex items-center gap-2 text-xs font-bold shadow-sm">
-                                    {updateMilestone.isPending ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
-                                    Lưu
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </td>
-            </tr>
-        );
-    }
-
-    return (
-        <tr className="group cursor-pointer transition-all hover:bg-bg-muted border-b border-border">
-            {/* Bước */}
-            <td className="px-3 py-3.5 text-center">
-                <span className="text-xs text-txt-secondary font-bold bg-bg-muted px-2.5 py-1 rounded-lg border border-border">B.{milestone.step_number}</span>
-            </td>
-            {/* Nội dung */}
-            <td className="px-4 py-3.5">
-                <div className="flex items-start gap-3">
-                    <div className="mt-0.5 shrink-0">
-                        {getStatusIcon(milestone.status)}
-                    </div>
-                    <div className="min-w-0">
-                        <p className="font-bold text-txt-primary text-sm group-hover:text-primary-500 transition-colors">{milestone.step_name}</p>
-                        {milestone.notes && (
-                            <p className="text-xs text-txt-muted mt-1 truncate max-w-[400px]">
-                                <span className="font-bold mr-1 text-txt-secondary">Ghi chú:</span>{milestone.notes}
-                            </p>
-                        )}
-                    </div>
-                </div>
-            </td>
-            {/* Trạng thái */}
-            <td className="px-4 py-3.5 text-center">
-                <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-xl whitespace-nowrap border ${
-                    milestone.status === 'completed' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' :
-                    milestone.status === 'in_progress' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
-                    milestone.status === 'blocked' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                    'bg-bg-muted text-txt-muted border-border'
-                }`}>
-                    {getStatusText(milestone.status)}
-                </span>
-            </td>
-            {/* Ngày HT */}
-            <td className="px-4 py-3.5 text-center">
-                {milestone.completed_date ? (
-                    <span className="text-xs font-bold text-txt-secondary bg-bg-muted px-2.5 py-1 rounded-lg border border-border">
-                        {new Date(milestone.completed_date).toLocaleDateString('vi-VN')}
-                    </span>
-                ) : (
-                    <span className="text-xs text-txt-muted italic">-</span>
-                )}
-            </td>
-            {/* Thao tác */}
-            {canEdit && (
-                <td className="px-4 py-3.5 text-center">
-                    <button 
-                        onClick={() => setIsEditing(true)}
-                        className="p-1.5 text-txt-muted hover:text-primary-500 hover:bg-bg-muted rounded-xl transition-colors"
-                        title="Cập nhật"
-                    >
-                        <Pencil className="w-4 h-4" />
-                    </button>
-                </td>
-            )}
-        </tr>
-    );
-}

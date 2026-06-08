@@ -100,24 +100,42 @@ export const useSaveConstructionProgress = (projectId: string) => {
   const { addToast } = useToast();
 
   return useMutation({
-    mutationFn: (tasks: ConstructionProgress[]) => 
+    mutationFn: (tasks: ConstructionProgress[]) =>
       ConstructionService.saveConstructionProgress(projectId, tasks),
+    onMutate: async (newTasks) => {
+      await queryClient.cancelQueries({ queryKey: ['construction-progress', projectId] });
+      const previous = queryClient.getQueryData<ConstructionProgress[]>(['construction-progress', projectId]);
+      queryClient.setQueryData<ConstructionProgress[]>(['construction-progress', projectId], (old = []) => {
+        const updated = [...old];
+        for (const t of newTasks) {
+          const idx = updated.findIndex(o => o.progress_id === t.progress_id);
+          if (idx >= 0) updated[idx] = { ...updated[idx], ...t };
+          else updated.push({ ...t, progress_id: t.progress_id || `temp-${Date.now()}` });
+        }
+        return updated;
+      });
+      return { previous };
+    },
+    onError: (error, _, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['construction-progress', projectId], context.previous);
+      }
+      addToast({
+        title: 'Thất bại',
+        message: error.message || 'Lỗi khi cập nhật tiến độ.',
+        type: 'error'
+      });
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['construction-progress', projectId] });
       addToast({
         title: 'Lưu tiến độ thành công',
         message: 'Đã cập nhật tiến độ thi công của nhà thầu.',
         type: 'success'
       });
     },
-    onError: (error) => {
-      console.error(error);
-      addToast({
-        title: 'Thất bại',
-        message: error.message || 'Lỗi khi cập nhật tiến độ.',
-        type: 'error'
-      });
-    }
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['construction-progress', projectId] });
+    },
   });
 };
 
@@ -126,24 +144,36 @@ export const useDeleteProgressItem = (projectId: string) => {
   const { addToast } = useToast();
 
   return useMutation({
-    mutationFn: (progressId: string) => 
+    mutationFn: (progressId: string) =>
       ConstructionService.deleteConstructionProgress(progressId),
+    onMutate: async (progressId) => {
+      await queryClient.cancelQueries({ queryKey: ['construction-progress', projectId] });
+      const previous = queryClient.getQueryData<ConstructionProgress[]>(['construction-progress', projectId]);
+      queryClient.setQueryData<ConstructionProgress[]>(['construction-progress', projectId], (old = []) =>
+        old.filter(item => item.progress_id !== progressId)
+      );
+      return { previous };
+    },
+    onError: (error, _, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['construction-progress', projectId], context.previous);
+      }
+      addToast({
+        title: 'Thất bại',
+        message: error.message || 'Lỗi khi xóa đầu việc tiến độ.',
+        type: 'error'
+      });
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['construction-progress', projectId] });
       addToast({
         title: 'Đã xóa đầu việc',
         message: 'Đã xóa đầu việc tiến độ thi công thành công.',
         type: 'success'
       });
     },
-    onError: (error) => {
-      console.error(error);
-      addToast({
-        title: 'Thất bại',
-        message: error.message || 'Lỗi khi xóa đầu việc tiến độ.',
-        type: 'error'
-      });
-    }
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['construction-progress', projectId] });
+    },
   });
 };
 

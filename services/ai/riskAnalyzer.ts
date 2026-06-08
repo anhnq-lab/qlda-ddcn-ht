@@ -30,8 +30,8 @@ function checkRuleBasedRisks(project: Project): EnrichedRiskItem[] {
     const risks: EnrichedRiskItem[] = [];
     const common = { projectId: project.ProjectID, projectName: project.ProjectName, source: 'rule' as const };
 
-    const physical = project.PhysicalProgress ?? project.Progress ?? 0;
-    const financial = project.FinancialProgress ?? project.PaymentProgress ?? 0;
+    const physical = project.PhysicalProgress ?? project.ComputedStats?.PhysicalProgress ?? 0;
+    const financial = project.FinancialProgress ?? project.ComputedStats?.PaymentProgress ?? 0;
 
     // 1. Chênh lệch tiến độ vật lý vs tài chính
     if (Math.abs(physical - financial) > 20) {

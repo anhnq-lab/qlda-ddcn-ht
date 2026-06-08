@@ -85,58 +85,62 @@ function runRuleBasedChecks(project: Project): EnrichedComplianceCheck[] {
     }
 
     // 4. PCCC
+    const pcccApproval = (project as any).Approvals?.find((a: any) => a.ApprovalType === 'pccc');
     checks.push({
         id: 'pccc',
         regulation: 'QCVN 06:2022/BXD',
         article: 'Phòng cháy chữa cháy',
         requirement: 'Phải có thẩm duyệt PCCC',
-        status: project.PCCCApprovalNumber ? 'passed' : 'pending',
-        detail: project.PCCCApprovalNumber
-            ? `Số ${project.PCCCApprovalNumber} ngày ${project.PCCCApprovalDate || 'N/A'}`
+        status: pcccApproval?.DocumentNumber ? 'passed' : 'pending',
+        detail: pcccApproval?.DocumentNumber
+            ? `Số ${pcccApproval.DocumentNumber} ngày ${pcccApproval.DocumentDate || 'N/A'}`
             : 'Chưa có thẩm duyệt PCCC',
-        recommendation: !project.PCCCApprovalNumber ? 'Lập hồ sơ thẩm duyệt PCCC' : undefined,
+        recommendation: !pcccApproval?.DocumentNumber ? 'Lập hồ sơ thẩm duyệt PCCC' : undefined,
         source: 'rule',
     });
 
     // 5. Đánh giá tác động môi trường
+    const envApproval = (project as any).Approvals?.find((a: any) => a.ApprovalType === 'environment');
     checks.push({
         id: 'environmental',
         regulation: 'Luật BVMT 2020',
         article: 'Điều 30-34',
         requirement: 'Phải có ĐTM hoặc Cam kết BVMT',
-        status: project.EnvApprovalNumber ? 'passed' : 'warning',
-        detail: project.EnvApprovalNumber
-            ? `Số ${project.EnvApprovalNumber} (${project.EnvApprovalType || 'ĐTM'})`
+        status: envApproval?.DocumentNumber ? 'passed' : 'warning',
+        detail: envApproval?.DocumentNumber
+            ? `Số ${envApproval.DocumentNumber} (${envApproval.ExtraInfo || 'ĐTM'})`
             : 'Chưa có ĐTM / Cam kết BVMT',
-        recommendation: !project.EnvApprovalNumber ? 'Lập báo cáo ĐTM theo Luật BVMT 2020' : undefined,
+        recommendation: !envApproval?.DocumentNumber ? 'Lập báo cáo ĐTM theo Luật BVMT 2020' : undefined,
         source: 'rule',
     });
 
     // 6. Giấy phép xây dựng
     if (project.Status === ProjectStatus.Execution) {
+        const permitApproval = (project as any).Approvals?.find((a: any) => a.ApprovalType === 'construction_permit');
         checks.push({
             id: 'construction_permit',
             regulation: 'TT 24/2025/TT-BXD',
             article: 'Giấy phép xây dựng',
             requirement: 'Phải có GPXD trước khi khởi công',
-            status: project.ConstructionPermitNumber ? 'passed' : 'warning',
-            detail: project.ConstructionPermitNumber
-                ? `Số ${project.ConstructionPermitNumber} ngày ${project.ConstructionPermitDate || 'N/A'}`
+            status: permitApproval?.DocumentNumber ? 'passed' : 'warning',
+            detail: permitApproval?.DocumentNumber
+                ? `Số ${permitApproval.DocumentNumber} ngày ${permitApproval.DocumentDate || 'N/A'}`
                 : 'Chưa ghi nhận GPXD',
-            recommendation: !project.ConstructionPermitNumber ? 'Bổ sung GPXD vào hồ sơ' : undefined,
+            recommendation: !permitApproval?.DocumentNumber ? 'Bổ sung GPXD vào hồ sơ' : undefined,
             source: 'rule',
         });
     }
 
     // 7. Thẩm định thiết kế
+    const designAppraisal = (project as any).Approvals?.find((a: any) => a.ApprovalType === 'design_appraisal');
     checks.push({
         id: 'design_appraisal',
         regulation: 'Luật Xây dựng',
         article: 'Điều 82-83',
         requirement: 'Phải có kết quả thẩm định thiết kế',
-        status: project.DesignAppraisalNumber ? 'passed' : 'pending',
-        detail: project.DesignAppraisalNumber
-            ? `Số ${project.DesignAppraisalNumber} ngày ${project.DesignAppraisalDate || 'N/A'}`
+        status: designAppraisal?.DocumentNumber ? 'passed' : 'pending',
+        detail: designAppraisal?.DocumentNumber
+            ? `Số ${designAppraisal.DocumentNumber} ngày ${designAppraisal.DocumentDate || 'N/A'}`
             : 'Chưa có kết quả thẩm định',
         source: 'rule',
     });

@@ -32,9 +32,6 @@ import {
     GLOBAL_VIEW_DEPARTMENTS,
     GLOBAL_VIEW_ROLES,
     PROJECT_SCOPED_DEPARTMENTS,
-    DepartmentRule,
-    DEFAULT_DEPARTMENT_RULES,
-    departmentMatches,
     resolveSystemRole,
 } from '../types/permission.types';
 import { permissionCache } from '../utils/permissionCache';
@@ -50,6 +47,8 @@ interface PermissionCacheState {
     isGlobalScope: boolean;
     /** Ban QLDA mà PGĐ phụ trách (chỉ dùng cho deputy_director) */
     managedBoards: number[];
+    /** Mã phòng PGĐ phụ trách = Ban QLDA + phòng nghiệp vụ (chỉ deputy_director) */
+    managedDeptCodes: string[];
     loading: boolean;
     loaded: boolean;
     /** Which effectiveUserId this cache is for */
@@ -84,14 +83,6 @@ export function clearRoleDefaultsCache(): void {
     roleDefaultsCache.clear();
 }
 
-// Lớp 2 — cache rule giới hạn theo phòng ban (global, không theo user)
-let deptRulesCache: DepartmentRule[] | null = null;
-
-/** Xoá cache rule phòng ban (gọi sau khi Admin sửa department_permission_rules). */
-export function clearDeptRulesCache(): void {
-    deptRulesCache = null;
-}
-
 // ─── Provider ─────────────────────────────────────────────
 
 export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -109,37 +100,13 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         systemRole: 'staff',
         isGlobalScope: false,
         managedBoards: [],
+        managedDeptCodes: [],
         loading: true,
         loaded: false,
         cachedForUserId: null,
     });
 
     const [dbRoleDefaults, setDbRoleDefaults] = useState<Map<string, PermissionAction[]>>(new Map());
-
-    // Lớp 2 — rule giới hạn theo phòng ban (global; nạp 1 lần từ DB, fallback hằng số)
-    const [deptRules, setDeptRules] = useState<DepartmentRule[]>(deptRulesCache ?? DEFAULT_DEPARTMENT_RULES);
-
-    useEffect(() => {
-        if (deptRulesCache) { setDeptRules(deptRulesCache); return; }
-        (async () => {
-            try {
-                const { data, error } = await (supabase as any)
-                    .from('department_permission_rules')
-                    .select('resource, action, allowed_departments');
-                if (!error && Array.isArray(data)) {
-                    const rules: DepartmentRule[] = data.map((r: any) => ({
-                        resource: r.resource,
-                        action: r.action,
-                        allowedDepartments: r.allowed_departments || [],
-                    }));
-                    deptRulesCache = rules;
-                    setDeptRules(rules);
-                }
-            } catch (e) {
-                console.warn('[PermissionCtx] Không tải được department_permission_rules, dùng hằng số:', e);
-            }
-        })();
-    }, []);
 
     // Prevent concurrent fetches for the same user
     const fetchingRef = useRef<string | null>(null);
@@ -155,16 +122,23 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
     }, [effectiveUser, effectiveUserType]);
 
     // Compute global scope flag
+    // Quy tắc phạm vi:
+    //   - super_admin, director, chief_accountant → Global (thấy tất cả)
+    //   - deputy_director → theo leadership_assignments (giải quyết động bên dưới)
+    //   - Phòng QLDA (PROJECT_SCOPED_DEPARTMENTS) → chỉ thấy dự án thuộc Ban mình
+    //   - Phòng nghiệp vụ (HC-TH, KH-ĐT, KT-TĐ, …):
+    //       • dept_head / deputy_head → Global (thấy tất cả dự án)
+    //       • specialist / staff → chỉ thấy dự án mình là thành viên (member-scoped)
     const isGlobalScope = useMemo(() => {
         if (!effectiveUser) return false;
 
         const userDept = effectiveUser.Department || '';
 
         // If they are explicitly in a project-scoped department, they ONLY see their projects, regardless of role
-        const isProjectScoped = PROJECT_SCOPED_DEPARTMENTS.some(dept => 
+        const isProjectScoped = PROJECT_SCOPED_DEPARTMENTS.some(dept =>
             userDept.includes(dept) || dept.includes(userDept)
         ) || userDept.toLowerCase().includes('quản lý dự án');
-        
+
         if (isProjectScoped && systemRole !== 'super_admin') {
             return false;
         }
@@ -174,9 +148,17 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         if (['super_admin', 'director', 'chief_accountant'].includes(systemRole)) {
             return true;
         }
-        return GLOBAL_VIEW_DEPARTMENTS.some(dept =>
-            userDept.includes(dept) || dept.includes(userDept)
-        );
+
+        // Phòng nghiệp vụ: chỉ Lãnh đạo phòng (TrP/PhP) có phạm vi toàn cục.
+        // CV/HC phải là thành viên dự án mới thấy — xử lý qua useScopedProjects (member-scoped).
+        if (['dept_head', 'deputy_head'].includes(systemRole)) {
+            return GLOBAL_VIEW_DEPARTMENTS.some(dept =>
+                userDept.includes(dept) || dept.includes(userDept)
+            );
+        }
+
+        // specialist, staff ở phòng nghiệp vụ → KHÔNG global → member-scoped
+        return false;
     }, [effectiveUser, systemRole]);
 
     // Fetch role defaults from DB
@@ -229,6 +211,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                     systemRole: 'staff',
                     isGlobalScope: false,
                     managedBoards: [],
+                    managedDeptCodes: [],
                     loading: false,
                     loaded: true,
                     cachedForUserId: null,
@@ -257,6 +240,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 systemRole: cached.systemRole as SystemRole,
                 isGlobalScope: cached.isGlobalScope,
                 managedBoards: cached.managedBoards ?? [],
+                managedDeptCodes: cached.managedDeptCodes ?? [],
                 loading: false,
                 loaded: true,
                 cachedForUserId: userId,
@@ -280,6 +264,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 systemRole,
                 isGlobalScope: true,
                 managedBoards: [],
+                managedDeptCodes: [],
             });
             fetchingRef.current = null;
             setState({
@@ -287,6 +272,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 systemRole,
                 isGlobalScope: true,
                 managedBoards: [],
+                managedDeptCodes: [],
                 loading: false,
                 loaded: true,
                 cachedForUserId: userId,
@@ -298,10 +284,14 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         // PGĐ chỉ thấy dự án của các Ban phụ trách. Fallback không phá vỡ:
         // chưa được phân công → tạm giữ Global view cho tới khi admin cấu hình.
         let managedBoards: number[] = [];
+        let managedDeptCodes: string[] = [];
         let effectiveGlobalScope = isGlobalScope;
         if (systemRole === 'deputy_director') {
             try {
-                managedBoards = await LeadershipService.getManagedBoards(userId);
+                [managedBoards, managedDeptCodes] = await Promise.all([
+                    LeadershipService.getManagedBoards(userId),
+                    LeadershipService.getManagedDepartmentCodes(userId),
+                ]);
             } catch (e) {
                 console.warn('[PermissionCtx] Không tải được Ban phụ trách của PGĐ:', e);
             }
@@ -339,6 +329,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                     systemRole,
                     isGlobalScope: effectiveGlobalScope,
                     managedBoards,
+                    managedDeptCodes,
                 });
             }
 
@@ -348,6 +339,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 systemRole,
                 isGlobalScope: effectiveGlobalScope,
                 managedBoards,
+                managedDeptCodes,
                 loading: false,
                 loaded: true,
                 cachedForUserId: userId,
@@ -360,6 +352,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 systemRole,
                 isGlobalScope: effectiveGlobalScope,
                 managedBoards,
+                managedDeptCodes,
                 loading: false,
                 loaded: true,
                 cachedForUserId: userId,
@@ -393,21 +386,6 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         await fetchPermissions();
     }, [fetchPermissions, effectiveUser?.EmployeeID, state.systemRole]);
 
-    // ── Lớp 2: cổng giới hạn theo phòng ban ────────────────
-    // Khi có rule cho (resource, action): chỉ phòng được phép mới qua.
-    // Vai trò lãnh đạo (toàn cục) bypass — ma trận Lớp 1 vốn không cấp action nhạy cảm cho họ.
-    const deptGateAllows = useCallback(
-        (resource: PermissionResource, action: PermissionAction): boolean => {
-            const effRole = systemRole;
-            const LEADERSHIP_BYPASS: SystemRole[] = ['super_admin', ...GLOBAL_VIEW_ROLES, 'deputy_director'];
-            if (LEADERSHIP_BYPASS.includes(effRole)) return true;
-            const rules = deptRules.filter(r => r.resource === resource && r.action === action);
-            if (rules.length === 0) return true; // không có giới hạn
-            return rules.some(r => departmentMatches(effectiveUser?.Department, r.allowedDepartments));
-        },
-        [deptRules, systemRole, effectiveUser]
-    );
-
     // ── Core permission check ──────────────────────────────
     const can = useCallback(
         (resource: PermissionResource, action: PermissionAction): boolean => {
@@ -431,10 +409,10 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
                 return result;
             }
 
-            // 2) Fallback to DB role defaults if available (AND cổng phòng ban Lớp 2)
+            // 2) Fallback to DB role defaults if available
             if (dbRoleDefaults.size > 0) {
                 const actions = dbRoleDefaults.get(resource);
-                const result = (actions ? actions.includes(action) : false) && deptGateAllows(resource, action);
+                const result = actions ? actions.includes(action) : false;
                 if (import.meta.env.DEV) {
                     console.debug(`[PermissionCtx] [DB-role-defaults] ${resource}.${action} = ${result}`);
                 }
@@ -445,8 +423,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             const defaults = DEFAULT_ROLE_PERMISSIONS[state.systemRole];
             if (!defaults) return false;
             const defaultActions = defaults[resource as keyof typeof defaults];
-            const result = (defaultActions ? (defaultActions as PermissionAction[]).includes(action) : false)
-                && deptGateAllows(resource, action);
+            const result = defaultActions ? (defaultActions as PermissionAction[]).includes(action) : false;
             // Warn in all environments for non-contractor roles — DB should be authoritative
             // (super_admin is handled above and never reaches here)
             if (state.systemRole !== 'contractor') {
@@ -454,7 +431,7 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
             }
             return result;
         },
-        [state.permissionMap, state.loaded, state.systemRole, systemRole, dbRoleDefaults, deptGateAllows]
+        [state.permissionMap, state.loaded, state.systemRole, systemRole, dbRoleDefaults]
     );
 
     // ── Project-scoped check ───────────────────────────────
@@ -489,9 +466,9 @@ export const PermissionProvider: React.FC<{ children: ReactNode }> = ({ children
         [can, state.isGlobalScope, state.managedBoards, effectiveUser, state.systemRole]
     );
 
-    // ── Lớp 3: record-level — quyền SỬA một dự án cụ thể ───
-    // Theo tài liệu Mục 3.3: chỉ người tạo (created_by) hoặc thành viên dự án
-    // (project_members) mới được sửa. Lãnh đạo/Trưởng phòng chỉ Xem (matrix đã chặn).
+    // ── Lớp 2: record-level — quyền SỬA một dự án cụ thể ───
+    // Chỉ chuyên viên phụ trách (người tạo / thành viên dự án) mới được sửa.
+    // Lãnh đạo Ban/Phòng chỉ Xem (ma trận vai trò không cấp update cho họ).
     const canEditProject = useCallback(
         (project: { createdBy?: string | null; memberIds?: string[] }): boolean => {
             if (systemRole === 'super_admin' || state.systemRole === 'super_admin') return true;

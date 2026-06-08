@@ -25,6 +25,8 @@ export interface PermissionCheckResult {
     isGlobalScope: boolean;
     /** Ban QLDA mà PGĐ phụ trách (chỉ deputy_director; rỗng với role khác) */
     managedBoards: number[];
+    /** Mã phòng PGĐ phụ trách = Ban QLDA + phòng nghiệp vụ (chỉ deputy_director) */
+    managedDeptCodes: string[];
     /** Get the user's system role */
     systemRole: SystemRole;
     /** Whether permissions have been loaded */
@@ -54,6 +56,7 @@ export function usePermissionCheck(): PermissionCheckResult {
         canEditProject: ctx.canEditProject,
         isGlobalScope: ctx.isGlobalScope,
         managedBoards: ctx.managedBoards,
+        managedDeptCodes: ctx.managedDeptCodes,
         systemRole: ctx.systemRole,
         loading: ctx.loading,
         permissionMap: ctx.permissionMap,

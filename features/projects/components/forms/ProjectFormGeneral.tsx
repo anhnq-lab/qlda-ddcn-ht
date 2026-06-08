@@ -1,7 +1,8 @@
-import React from 'react';
-import { Building2, Calendar, Shield, DollarSign, Layers, MapPin, Clock, User, HardHat, Image as ImageIcon } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Building2, Calendar, Shield, DollarSign, Layers, MapPin, Clock, User, HardHat, Image as ImageIcon, Upload, Loader2 } from 'lucide-react';
 import { MANAGEMENT_BOARDS } from '../../../../types';
-import { SectionHeader, labelClass, inputClass, inputWithIconClass, iconClass, selectWithIconClass, PROVINCES, CONSTRUCTION_TYPES } from './FormShared';
+import { SectionHeader, labelClass, inputClass, inputWithIconClass, iconClass, selectWithIconClass, PROVINCES, CONSTRUCTION_TYPES, CONSTRUCTION_GRADES } from './FormShared';
+import { supabase } from '../../../../lib/supabase';
 
 const GROUP_LABELS = {
     QN: 'Quan trọng Quốc gia',
@@ -24,6 +25,42 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
     errors = {},
 }) => {
     const err = (f: string) => errors[f]?.message as string | undefined;
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        try {
+            setIsUploading(true);
+            const fileExt = file.name.split('.').pop();
+            const fileName = `covers/${Date.now()}_${Math.random().toString(36).substring(2)}.${fileExt}`;
+            
+            const { error: uploadError } = await supabase.storage
+                .from('project-images')
+                .upload(fileName, file, {
+                    cacheControl: '3600',
+                    upsert: true
+                });
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('project-images')
+                .getPublicUrl(fileName);
+
+            updateField('ImageUrl', publicUrl);
+        } catch (error) {
+            console.error('Lỗi tải ảnh dự án lên:', error);
+            alert('Không thể tải ảnh lên. Chi tiết lỗi: ' + (error as Error).message);
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    };
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
@@ -47,16 +84,23 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                 </div>
                 <div>
                     <label className={labelClass}>
-                        Nhóm dự án <span className="text-blue-500 dark:text-blue-400 text-xs font-normal">(Tự động xác định)</span>
+                        Nhóm dự án <span className="text-blue-500 dark:text-blue-400 text-xs font-normal">(Có thể chọn thủ công)</span>
                     </label>
                     <div className="relative">
-                        <div className={`${inputWithIconClass} flex items-center bg-bg-subtle cursor-not-allowed select-none`}>
-                            {GROUP_LABELS[formData.GroupCode as keyof typeof GROUP_LABELS] || 'Nhóm C'}
-                        </div>
+                        <select
+                            className={`${selectWithIconClass}${aiHighlight('GroupCode')}`}
+                            value={formData.GroupCode || 'C'}
+                            onChange={e => updateField('GroupCode', e.target.value)}
+                        >
+                            <option value="QN">Quan trọng Quốc gia</option>
+                            <option value="A">Nhóm A</option>
+                            <option value="B">Nhóm B</option>
+                            <option value="C">Nhóm C</option>
+                        </select>
                         <Layers className={iconClass} />
                     </div>
                     <p className="text-[11px] text-txt-placeholder mt-1">
-                        Xác định theo Tổng mức đầu tư &amp; Chuyên ngành (Luật ĐTC 58/2024).
+                        Xác định theo Tổng mức &amp; Chuyên ngành (Luật ĐTC 58/2024), hoặc tự chọn thủ công.
                     </p>
                 </div>
             </div>
@@ -73,34 +117,22 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                 {err('ProjectName') && <p className="text-xs text-red-500 mt-1">{err('ProjectName')}</p>}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                    <label className={labelClass}>Chuyên ngành dự án</label>
-                    <div className="relative">
-                        <select
-                            className={`${selectWithIconClass}${aiHighlight('SpecialtyType')}`}
-                            value={formData.SpecialtyType || ''}
-                            onChange={e => updateField('SpecialtyType', e.target.value)}
-                        >
-                            <option value="">-- Chọn chuyên ngành --</option>
-                            <option value="civil_industrial">Dân dụng & Công nghiệp</option>
-                            <option value="transport_urban">Giao thông & Đô thị</option>
-                            <option value="agriculture_rural">Nông nghiệp & PTNT</option>
-                            <option value="mixed">Hỗn hợp</option>
-                            <option value="other">Khác</option>
-                        </select>
-                        <Layers className={iconClass} />
-                    </div>
-                </div>
-                <div>
-                    <label className={labelClass}>Chi tiết chuyên ngành (Phân loại chi tiết)</label>
-                    <input
-                        type="text"
-                        placeholder="VD: Cầu đường bộ, Nhà văn hóa, Trạm y tế..."
-                        className={`${inputClass}${aiHighlight('SpecialtyDetails')}`}
-                        value={formData.SpecialtyDetails || ''}
-                        onChange={e => updateField('SpecialtyDetails', e.target.value)}
-                    />
+            <div className="mt-4">
+                <label className={labelClass}>Chuyên ngành dự án</label>
+                <div className="relative max-w-md">
+                    <select
+                        className={`${selectWithIconClass}${aiHighlight('SpecialtyType')}`}
+                        value={formData.SpecialtyType || ''}
+                        onChange={e => updateField('SpecialtyType', e.target.value)}
+                    >
+                        <option value="">-- Chọn chuyên ngành --</option>
+                        <option value="civil_industrial">Dân dụng & Công nghiệp</option>
+                        <option value="transport_urban">Giao thông & Đô thị</option>
+                        <option value="agriculture_rural">Nông nghiệp & PTNT</option>
+                        <option value="mixed">Hỗn hợp</option>
+                        <option value="other">Khác</option>
+                    </select>
+                    <Layers className={iconClass} />
                 </div>
             </div>
 
@@ -166,6 +198,24 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                                 ))}
                             </select>
                             <HardHat className={iconClass} />
+                        </div>
+                    </div>
+
+                    {/* Cấp công trình */}
+                    <div>
+                        <label className={labelClass}>Cấp công trình</label>
+                        <div className="relative">
+                            <select
+                                className={`${selectWithIconClass}${aiHighlight('ConstructionGrade')}`}
+                                value={formData.ConstructionGrade || ''}
+                                onChange={e => updateField('ConstructionGrade', e.target.value)}
+                            >
+                                <option value="">-- Chọn cấp --</option>
+                                {CONSTRUCTION_GRADES.map(g => (
+                                    <option key={g.value} value={g.value}>{g.label}</option>
+                                ))}
+                            </select>
+                            <Building2 className={iconClass} />
                         </div>
                     </div>
 
@@ -243,7 +293,7 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                     </div>
 
                     {/* Người quyết định đầu tư */}
-                    <div>
+                    <div className="md:col-span-2">
                         <label className={labelClass}>Người quyết định đầu tư</label>
                         <div className="relative">
                             <input type="text"
@@ -256,8 +306,8 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                         </div>
                     </div>
 
-                    {/* Chủ đầu tư */}
-                    <div>
+                    {/* Tên chủ đầu tư */}
+                    <div className="md:col-span-3">
                         <label className={labelClass}>Tên chủ đầu tư</label>
                         <div className="relative">
                             <input type="text"
@@ -271,42 +321,47 @@ export const ProjectFormGeneral: React.FC<ProjectFormGeneralProps> = ({
                     </div>
                 </div>
 
-                {/* ── Cờ phân loại ── */}
-                <div className="flex flex-wrap gap-3 mt-4">
-                    <label className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 cursor-pointer transition-all text-sm font-medium ${
-                        formData.IsEmergency
-                            ? 'border-red-400 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                            : 'border-gray-200 dark:border-slate-500 text-txt-muted hover:border-red-300'
-                    }`}>
-                        <input type="checkbox" className="accent-red-500"
-                            checked={!!formData.IsEmergency}
-                            onChange={e => updateField('IsEmergency', e.target.checked)} />
-                        Dự án khẩn cấp
-                    </label>
-                    <label className={`flex items-center gap-2 px-3 py-2 rounded-xl border-2 cursor-pointer transition-all text-sm font-medium ${
-                        formData.IsODA
-                            ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                            : 'border-gray-200 dark:border-slate-500 text-txt-muted hover:border-blue-300'
-                    }`}>
-                        <input type="checkbox" className="accent-blue-500"
-                            checked={!!formData.IsODA}
-                            onChange={e => updateField('IsODA', e.target.checked)} />
-                        Dự án ODA / vốn nước ngoài
-                    </label>
-                </div>
+
 
                 {/* ── Ảnh dự án & Tọa độ GPS ── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                     <div>
-                        <label className={labelClass}>Ảnh dự án (đường dẫn URL)</label>
-                        <div className="relative">
-                            <input type="text"
-                                placeholder="https://..."
-                                className={inputWithIconClass}
-                                value={formData.ImageUrl || ''}
-                                onChange={e => updateField('ImageUrl', e.target.value)}
+                        <label className={labelClass}>Ảnh dự án (đường dẫn hoặc tải lên)</label>
+                        <div className="flex gap-2">
+                            <div className="relative flex-1">
+                                <input type="text"
+                                    placeholder="https://..."
+                                    className={inputWithIconClass}
+                                    value={formData.ImageUrl || ''}
+                                    onChange={e => updateField('ImageUrl', e.target.value)}
+                                />
+                                <ImageIcon className={iconClass} />
+                            </div>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                ref={fileInputRef}
+                                onChange={handleImageUpload}
                             />
-                            <ImageIcon className={iconClass} />
+                            <button
+                                type="button"
+                                disabled={isUploading}
+                                onClick={() => fileInputRef.current?.click()}
+                                className="px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1 border border-gray-300 dark:border-slate-500 whitespace-nowrap transition-colors"
+                            >
+                                {isUploading ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                                        <span>Đang tải...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Upload className="w-4 h-4 text-gray-600 dark:text-slate-300" />
+                                        <span>Tải ảnh</span>
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </div>
                     <div>

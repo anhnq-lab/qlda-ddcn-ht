@@ -200,45 +200,6 @@ export const PROJECT_SCOPED_DEPARTMENTS = [
 ];
 
 // ═══════════════════════════════════════════
-// Lớp 2 — Giới hạn quyền theo phòng ban (department_permission_rules)
-// ═══════════════════════════════════════════
-
-export interface DepartmentRule {
-    resource: PermissionResource;
-    action: PermissionAction;
-    /** Danh sách phòng được phép (so khớp linh hoạt qua departmentMatches). */
-    allowedDepartments: string[];
-}
-
-/**
- * Khi tồn tại rule cho (resource, action): chỉ user thuộc allowedDepartments mới
- * được thực hiện action đó — TRỪ các vai trò toàn cục (GLOBAL_VIEW_ROLES) bypass.
- * Đây là fallback hằng số; nguồn chuẩn là bảng `department_permission_rules` (DB).
- * Phải đồng bộ với seed migration.
- */
-export const DEFAULT_DEPARTMENT_RULES: DepartmentRule[] = [
-    { resource: 'projects', action: 'create', allowedDepartments: ['Phòng Kế hoạch – Đấu thầu'] },
-    { resource: 'employees', action: 'create', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
-    { resource: 'employees', action: 'update', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
-    { resource: 'employees', action: 'delete', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
-    { resource: 'calendar', action: 'create', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
-    { resource: 'calendar', action: 'update', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
-    { resource: 'regulations', action: 'create', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
-    { resource: 'regulations', action: 'update', allowedDepartments: ['Phòng Hành chính – Tổng hợp'] },
-];
-
-/** So khớp tên phòng linh hoạt: chuẩn hóa gạch ngang/khoảng trắng, so 2 chiều substring. */
-export function departmentMatches(userDept: string | undefined | null, allowed: string[]): boolean {
-    if (!userDept) return false;
-    const norm = (s: string) => s.toLowerCase().replace(/[–—-]/g, '-').replace(/\s+/g, ' ').trim();
-    const u = norm(userDept);
-    return allowed.some(a => {
-        const x = norm(a);
-        return u === x || u.includes(x) || x.includes(u);
-    });
-}
-
-// ═══════════════════════════════════════════
 // Legacy role → new system role mapping
 // ═══════════════════════════════════════════
 
@@ -381,13 +342,11 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
     },
 
     // ── Trưởng phòng / Trưởng ban ──
-    // GĐ1: projects chỉ Xem (Decision #1). employees/calendar/regulations cấp ở role,
-    // bị Lớp 2 (department_permission_rules) siết về Phòng HC-TH.
     dept_head: {
         dashboard: ['view'],
         projects: ['view'],
         tasks: ['view', 'create', 'update', 'delete'],
-        employees: ['view', 'create', 'update', 'delete'], // Lớp 2 → chỉ HC-TH
+        employees: ['view', 'create', 'update', 'delete'],
         contractors: ['view', 'create', 'update'],
         bidding: ['view', 'create', 'update', 'export'],
         contracts: ['view', 'create', 'update'],
@@ -398,9 +357,9 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         bim: ['view', 'create', 'update'],
         legal_docs: ['view'],
         reports: ['view', 'export'],
-        regulations: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH
+        regulations: ['view', 'create', 'update'],
         workflows: ['view', 'create', 'update'],
-        calendar: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH (Decision #4)
+        calendar: ['view', 'create', 'update'],
         site_clearance: ['view', 'create', 'update'],
     },
 
@@ -420,18 +379,17 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         bim: ['view', 'create', 'update'],
         legal_docs: ['view'],
         reports: ['view', 'export'],
-        regulations: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH
+        regulations: ['view', 'create', 'update'],
         workflows: ['view'],
-        calendar: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH (Decision #4)
+        calendar: ['view', 'create', 'update'],
         site_clearance: ['view', 'create', 'update'],
     },
 
     // ── Chuyên viên / Kỹ sư ──
-    // projects.create bị Lớp 2 siết về Phòng KH-ĐT; projects.update bị Lớp 3 siết
-    // theo thành viên dự án (created_by / project_members). regulations Lớp 2 → HC-TH.
+    // projects.update bị Lớp 3 siết theo thành viên dự án (created_by / project_members).
     specialist: {
         dashboard: ['view'],
-        projects: ['view', 'create', 'update'],  // create→KH-ĐT (Lớp 2); update→thành viên (Lớp 3)
+        projects: ['view', 'create', 'update'],  // update→thành viên (Lớp 3)
         tasks: ['view', 'create', 'update'],
         employees: ['view'],
         contractors: ['view', 'create', 'update'],
@@ -444,13 +402,12 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         bim: ['view', 'create', 'update'],
         legal_docs: ['view'],
         reports: ['view'],
-        regulations: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH
+        regulations: ['view', 'create', 'update'],
         workflows: ['view'],
         calendar: ['view'],
         site_clearance: ['view', 'create', 'update'],
     },
     // ── Nhân viên Hành chính ──
-    // projects.update bị Lớp 3 siết theo thành viên dự án. regulations Lớp 2 → HC-TH.
     staff: {
         dashboard: ['view'],
         projects: ['view'],
@@ -466,7 +423,7 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<SystemRole, Partial<Record<Permiss
         bim: ['view'],
         legal_docs: ['view'],
         reports: ['view'],
-        regulations: ['view', 'create', 'update'], // Lớp 2 → chỉ HC-TH
+        regulations: ['view', 'create', 'update'],
         workflows: ['view'],
         calendar: ['view'],
         site_clearance: ['view'],

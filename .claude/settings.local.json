@@ -209,7 +209,13 @@
       "mcp__Claude_in_Chrome__computer",
       "Bash(node scripts/seed_regulation_articles.cjs)",
       "Bash(node scripts/gen_seed_sql.cjs)",
-      "Bash(antiword \"7.11-QD-PHAN-CONG-NHIEM-VU-BAN-GIAM-DOC_nguyenquanglinh-07-11-2025_17h32p49 \\(1\\)_1.doc\")"
+      "Bash(antiword \"7.11-QD-PHAN-CONG-NHIEM-VU-BAN-GIAM-DOC_nguyenquanglinh-07-11-2025_17h32p49 \\(1\\)_1.doc\")",
+      "Bash(git -C /d/01_Projects/qlda-ddcn-ht ls-files docs/)",
+      "Bash(Get-ChildItem -Path \"D:\\\\01_Projects\\\\qlda-ddcn-ht\" -Recurse -Directory -Depth 2)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|json\\)$\")",
+      "Bash(xxd)",
+      "Bash(python -c \"import json,collections; d=json.load\\(open\\(r'C:\\\\Users\\\\nguye\\\\.claude\\\\projects\\\\D--01-Projects-qlda-ddcn-ht\\\\f1eab68f-06c1-410c-8877-d784cc5cc37d\\\\tool-results\\\\mcp-06943db5-fde1-4f16-900c-8e37176eebb6-get_advisors-1780741606557.txt',encoding='utf-8'\\)\\); L=d.get\\('lints',d\\) if isinstance\\(d,dict\\) else d; c=collections.Counter\\(\\(x.get\\('name'\\),x.get\\('level'\\)\\) for x in L\\); print\\('TOTAL',len\\(L\\)\\); [print\\(n,lv,cnt\\) for \\(n,lv\\),cnt in c.most_common\\(\\)]\")",
+      "mcp__Claude_in_Chrome__javascript_tool"
     ]
   }
 }

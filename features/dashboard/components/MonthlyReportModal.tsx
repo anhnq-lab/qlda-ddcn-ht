@@ -60,8 +60,8 @@ export const MonthlyReportModal: React.FC<Props> = ({ month, year, stats, onClos
             },
             duAn: projects.slice(0, 8).map(p => ({
                 ten: p.ProjectName,
-                tieuDo: p.Progress,
-                giaiNgan: p.PaymentProgress,
+                tieuDo: p.ComputedStats?.PhysicalProgress || 0,
+                giaiNgan: p.ComputedStats?.PaymentProgress || 0,
                 vonTyDong: Math.round(Number(p.TotalInvestment) / 1e9 * 10) / 10,
                 trangThai: p.Status === 2 ? 'Đang thi công' : p.Status === 3 ? 'Hoàn thành' : 'Chuẩn bị ĐT',
             })),

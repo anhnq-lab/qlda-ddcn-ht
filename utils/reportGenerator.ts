@@ -39,7 +39,7 @@ export const generateMonitoringReport = (source: ReportDataSource): ReportData =
         `"${project.ProjectName}"`, // Quote for CSV safety
         project.GroupCode,
         formatVND(project.TotalInvestment),
-        project.Progress || 0,
+        project.ComputedStats?.PhysicalProgress || 0,
         project.Status === ProjectStatus.Preparation ? 'Chuẩn bị dự án' :
             project.Status === ProjectStatus.Execution ? 'Thực hiện dự án' : 'Kết thúc xây dựng',
         `"${project.InvestorName || 'Chưa cập nhật'}"`
@@ -161,13 +161,13 @@ export const generateRiskReport = (source: ReportDataSource): ReportData => {
     const riskCategories = [
         {
             category: 'Tiến độ',
-            items: source.projects.filter(p => (p.Progress || 0) < 50 && p.Status === ProjectStatus.Execution)
-                .map(p => ({ name: p.ProjectName, risk: 'Tiến độ chậm', progress: p.Progress }))
+            items: source.projects.filter(p => (p.ComputedStats?.PhysicalProgress || 0) < 50 && p.Status === ProjectStatus.Execution)
+                .map(p => ({ name: p.ProjectName, risk: 'Tiến độ chậm', progress: p.ComputedStats?.PhysicalProgress }))
         },
         {
             category: 'Tài chính',
-            items: source.projects.filter(p => (p.PaymentProgress || 0) < 30 && p.Status === ProjectStatus.Execution)
-                .map(p => ({ name: p.ProjectName, risk: 'Giải ngân chậm', progress: p.PaymentProgress }))
+            items: source.projects.filter(p => (p.ComputedStats?.PaymentProgress || 0) < 30 && p.Status === ProjectStatus.Execution)
+                .map(p => ({ name: p.ProjectName, risk: 'Giải ngân chậm', progress: p.ComputedStats?.PaymentProgress }))
         }
     ];
 

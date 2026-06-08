@@ -66,14 +66,14 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, 
 
         // 2. Project progress alerts
         (projects || [])
-            .filter(p => (p.Progress || 0) < 50 && p.Status === 2) // Execution status
+            .filter(p => (p.ComputedStats?.PhysicalProgress || 0) < 50 && p.Status === 2) // Execution status
             .slice(0, 2)
             .forEach((project, idx) => {
                 notifs.push({
                     id: `project-${project.ProjectID}`,
                     type: 'warning',
                     title: 'Cảnh báo tiến độ dự án',
-                    message: `${project.ProjectName} - Tiến độ: ${project.Progress || 0}%`,
+                    message: `${project.ProjectName} - Tiến độ: ${project.ComputedStats?.PhysicalProgress || 0}%`,
                     time: '2 giờ trước',
                     read: true,
                     link: `/projects/${project.ProjectID}`,

@@ -41,11 +41,11 @@
 | Vai trò thành viên | Đối tượng gán | Nhiệm vụ chính trên hệ thống | Giới hạn quyền thao tác |
 |---|---|---|---|
 | **Giám đốc QLDA** | Giám đốc Ban QLDA phụ trách dự án | - Theo dõi tiến độ tổng thể dự án.<br>- Rà soát, duyệt Master Plan (ngoài hệ thống).<br>- Theo dõi cảnh báo rủi ro về vốn, tiến độ. | **Chỉ xem**, không trực tiếp nhập liệu hoặc sửa thông tin chi tiết. |
-| **Kế toán theo dõi** | Kế toán viên (Phòng HCTH) được phân công theo dõi dự án | - Nhập đợt giải ngân thực tế (tạm ứng, thanh toán KLHT, thu hồi tạm ứng).<br>- Nhập hồ sơ thanh toán, thông tin hợp đồng.<br>- Theo dõi số dư công nợ và quyết toán dự án hoàn thành. | **Tạo/Sửa** tại Tab Vốn (giải ngân) và Tab Quyết toán. **Chỉ xem** các tab khác. |
-| **Cán bộ phụ trách chính** | Kỹ sư Ban QLDA (QLDA1/2/3) phụ trách chính dự án | - Lập kế hoạch thực hiện dự án (Master Plan).<br>- Cập nhật thông tin dự án (sau khi khởi tạo).<br>- Cập nhật tiến độ hạng mục, quy trình GPMB 16 bước.<br>- Nhập thông tin gói thầu (tab Gói thầu), đính kèm tài liệu pháp lý.<br>- Ghi nhận thông tin nhật ký thi công hàng ngày. | **Tạo/Sửa** toàn bộ các tab của dự án (trừ tab giải ngân thực tế của Kế toán). |
-| **Chuyên viên phối hợp (Phòng KHDT)** | Chuyên viên phòng Kế hoạch – Đấu thầu | - Nhập kế hoạch vốn năm, trung hạn và quyết định giao vốn.<br>- Nhập kế hoạch lựa chọn nhà thầu, thông tin gói thầu.<br>- Phối hợp theo dõi tiến độ đấu thầu. | **Tạo/Sửa** tại tab Vốn (Kế hoạch vốn) và tab Gói thầu (thông tin ban đầu). |
-| **Chuyên viên phối hợp (Phòng KTTD)** | Kỹ sư phòng Kỹ thuật – Thẩm định | - Nhập kết quả thẩm định thiết kế, dự toán (TK-DT).<br>- Nhập thông tin quy mô công trình và nghiệm thu QLCL. | **Tạo/Sửa** tại tab Thông tin chung (Pháp lý/Quy mô) và các nhiệm vụ thẩm định. |
-| **Chuyên viên phối hợp (Phòng HCTH)** | Chuyên viên mảng hành chính, văn phòng | - Nhập văn bản chỉ đạo điều hành chung của dự án.<br>- Quản lý, tải lên các tài liệu pháp lý chung.<br>- Hỗ trợ tổng hợp báo cáo tiến độ tuần/tháng. | **Tạo/Sửa** nhiệm vụ điều hành và tab Tài liệu được phân công. |
+| **Kế toán theo dõi** | Kế toán viên (Phòng HCTH) được phân công theo dõi dự án | - Cung cấp thông tin giải ngân thực tế (tạm ứng, thanh toán KLHT, thu hồi tạm ứng), hồ sơ thanh toán, thông tin hợp đồng và quyết toán dự án cho Cán bộ phụ trách chính nhập liệu.<br>- Theo dõi số dư công nợ và quyết toán dự án hoàn thành. | **Chỉ xem**, không trực tiếp nhập liệu. |
+| **Cán bộ phụ trách chính** | Kỹ sư Ban QLDA (QLDA1/2/3) phụ trách chính dự án | - Khởi tạo dự án mới, cập nhật thông tin chung, quy mô, pháp lý.<br>- Lập kế hoạch thực hiện dự án (Master Plan).<br>- Nhập kế hoạch vốn và giải ngân chi tiết dựa trên thông tin được cung cấp.<br>- Nhập thông tin gói thầu (tab Gói thầu) và đính kèm tài liệu pháp lý.<br>- Nhập đợt giải ngân thực tế và quyết toán dự án dựa trên dữ liệu kế toán cung cấp.<br>- Cập nhật tiến độ hạng mục, thông tin GPMB tổng hợp.<br>- Ghi nhận thông tin nhật ký thi công hàng ngày. | **Tạo/Sửa** toàn bộ các tab của dự án. |
+| **Chuyên viên phối hợp (Phòng KHDT)** | Chuyên viên phòng Kế hoạch – Đấu thầu | - Cung cấp thông tin kế hoạch vốn năm, trung hạn, quyết định giao vốn cho Cán bộ phụ trách chính nhập liệu.<br>- Cung cấp thông tin kế hoạch lựa chọn nhà thầu, thông tin gói thầu để Cán bộ phụ trách chính nhập.<br>- Phối hợp theo dõi tiến độ đấu thầu. | **Chỉ xem** thông tin dự án trên hệ thống. |
+| **Chuyên viên phối hợp (Phòng KTTD)** | Kỹ sư phòng Kỹ thuật – Thẩm định | - Cung cấp kết quả thẩm định thiết kế, dự toán (TK-DT) cho Cán bộ phụ trách chính nhập liệu.<br>- Cung cấp thông tin quy mô công trình và nghiệm thu QLCL để Cán bộ phụ trách chính cập nhật. | **Chỉ xem** thông tin dự án trên hệ thống. |
+| **Chuyên viên phối hợp (Phòng HCTH)** | Chuyên viên mảng hành chính, văn phòng | - Cung cấp văn bản chỉ đạo điều hành chung của dự án cho Cán bộ phụ trách chính cập nhật.<br>- Cung cấp các tài liệu pháp lý chung để Cán bộ phụ trách chính tải lên.<br>- Hỗ trợ tổng hợp báo cáo tiến độ tuần/tháng. | **Chỉ xem** thông tin dự án trên hệ thống. |
 
 
 ### Điều 2. Nguyên tắc chung
@@ -80,152 +80,177 @@ Trong quy chế này, mỗi trường thông tin được gắn một trong các
 | ⏳ **Đang bổ sung** | Chưa có ô nhập, đang phát triển | Tạm thời ghi nhận ngoài hệ thống |
 
 
-## CHƯƠNG II. QUY ĐỊNH NHẬP LIỆU DỰ ÁN
+## CHƯƠNG II. QUY ĐỊNH NHẬP LIỆU CHI TIẾT DỰ ÁN (THEO CẤU TRÚC TAB HỆ THỐNG)
 
-### Điều 5. Thông tin cơ bản dự án
+Quy chế nhập liệu dự án được tổ chức và thực hiện thống nhất theo trình tự 11 tab chức năng trong chi tiết dự án trên phần mềm.
 
-#### 5.1. Nhóm thông tin định danh
+### Điều 5. Nhập liệu Tab TỔNG QUAN (info)
 
-| STT | Trường | Ký hiệu | Vị trí trên phần mềm | Ghi chú |
-|---|---|---|---|---|
-| 1 | Tên dự án (*) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Thông tin cơ bản | Tên đầy đủ theo QĐ phê duyệt, không viết tắt |
-| 2 | Mã dự án (*) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Thông tin cơ bản | Bắt buộc nhập theo Mã quan hệ ngân sách (Mã QHNS) |
-| 3 | Chuyên ngành dự án (*) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Thông tin cơ bản | Dân dụng & CN / Giao thông & ĐT / Nông nghiệp & NT / Hỗn hợp / Khác |
-| 4 | **Nhóm dự án (QN/A/B/C)** | ⚙️ Tự động | Tab Thông tin chung → Phân mục Thông tin cơ bản | Tính từ Tổng mức ĐT + Chuyên ngành (Luật ĐTC 58/2024) — **không chọn tay** |
-| 5 | Phòng QLDA phụ trách (*) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Thông tin cơ bản | QLDA1 / QLDA2 / QLDA3 |
+Tab Tổng quan chứa thông tin pháp lý, định danh và nhân sự cốt lõi của dự án (được nhập thông qua form tạo mới/chỉnh sửa dự án).
 
-> **Áp dụng:** Nhập Loại hình đầu tư từ danh sách. Nhóm dự án (QN/A/B/C) được hệ thống tự động xác định dựa trên Tổng mức đầu tư và Chuyên ngành dự án theo quy định của Luật Đầu tư công.
+**5.1. Nhóm thông tin định danh và tài chính cơ bản (✍️ Nhập tay):**
+* **Tên dự án (*):** Nhập tên đầy đủ theo Quyết định phê duyệt dự án, không viết tắt.
+* **Mã dự án (*):** Hệ thống tự động sinh theo quy tắc đặt mã của hệ thống dựa trên thông tin tỉnh, nhóm và năm bắt đầu.
+* **Chuyên ngành dự án (*):** Chọn chuyên ngành tương ứng (Dân dụng & Công nghiệp / Giao thông & Đô thị / Nông nghiệp & PTNT / Hạ tầng kỹ thuật / Hỗn hợp / Khác). Hệ thống hỗ trợ tự động nhận diện theo tên dự án.
+* **Nhóm dự án (QN/A/B/C) (⚙️ Tự động):** Hệ thống tự động tính dựa trên Tổng mức đầu tư và Chuyên ngành dự án theo quy định của Luật Đầu tư công, người nhập **không chọn tay**.
+* **Tổng mức đầu tư (*):** Nhập số tiền VNĐ chính xác theo quyết định phê duyệt, không làm tròn.
+* **Địa điểm, Nguồn vốn, Thời gian thực hiện, Hình thức quản lý (*):** Nhập đúng theo quyết định phê duyệt.
+* **Mục tiêu đầu tư & Tóm tắt quy mô đầu tư (*):** Nhập mô tả dạng text tự do đầy đủ theo nội dung quyết định phê duyệt (các trường chi tiết cũ như diện tích đất, diện tích sàn, số tầng, chiều cao... đã bị loại bỏ khỏi giao diện nhập liệu để tinh giản).
 
-#### 5.2. Nhóm thông tin tài chính
+**5.2. Nhóm thông tin pháp lý ban đầu (✍️ Nhập tay):**
+* **Chủ trương đầu tư:** Nhập Số quyết định, Cơ quan phê duyệt và Ngày quyết định phê duyệt chủ trương đầu tư.
+* **Phê duyệt dự án:** Nhập Số quyết định, Cơ quan phê duyệt, Ngày phê duyệt dự án đầu tư và Ngày hoàn thành dự kiến.
+* **Thông tin bàn giao/tiếp nhận (nếu có):** Nhập Cấp quyết định trước bàn giao, Chủ đầu tư cũ và Số quyết định bàn giao.
 
-| STT | Trường | Ký hiệu | Vị trí trên phần mềm | Ghi chú |
-|---|---|---|---|---|
-| 8 | Tổng mức đầu tư (*) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Thông tin tài chính | VND theo QĐ phê duyệt, không làm tròn |
-| 9 | Nguồn vốn (*) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Thông tin tài chính | Chọn nhiều nguồn |
-| 10 | Cơ cấu vốn (NSTW, NSĐP, vay, ODA, khác) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Thông tin tài chính | 5 ô riêng |
-| 11 | Cơ cấu chi phí (GPMB, XL, TB, QLDA, TV, khác, dự phòng) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Thông tin tài chính | 7 ô riêng |
-| 12 | **Tổng cơ cấu chi phí** | ⚙️ Tự động | Tab Thông tin chung → Phân mục Thông tin tài chính | Hệ thống cộng 7 hạng mục |
-| 13 | Tổng dự toán (ban đầu) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Quy mô công trình | Nhập tại phân mục Quy mô công trình |
+**5.3. Phân công Nhân sự & Thành viên dự án (✍️ Nhập tay):**
+* Tại tab Thành viên của form, Cán bộ phụ trách chính phải thực hiện gán các nhân sự tham gia dự án:
+  * **Giám đốc QLDA (*):** Lãnh đạo Ban QLDA phụ trách (chỉ xem, rà soát ngoài hệ thống).
+  * **Kế toán theo dõi (*):** Kế toán viên (Phòng HCTH) được phân công phụ trách dự án.
+  * **Cán bộ phụ trách chính (*):** Bản thân kỹ sư QLDA phụ trách chính dự án đó.
+  * **Thành viên phối hợp:** Các chuyên viên phòng KHDT, KTTD và HCTH tham gia phối hợp.
 
-> **Lưu ý nhất quán số liệu:** Tổng mức đầu tư **nên bằng** tổng cơ cấu chi phí và tổng cơ cấu vốn. Hệ thống hiện **chưa cảnh báo tự động** khi lệch (đã đưa vào kế hoạch bổ sung). Người nhập tự rà soát.
+**5.4. Thông tin nhà thầu chính (⚙️ Tự động):**
+* Danh sách nhà thầu chính (Khảo sát, Thiết kế, Giám sát, Thi công...) được hệ thống tự động liên kết và hiển thị sau khi có kết quả lựa chọn nhà thầu và hợp đồng tương ứng được lưu trên hệ thống, **không nhập thủ công** tại Tab này.
 
-#### 5.3. Nhóm thông tin tiến độ
+**5.5. Trạng thái và hiện trạng dự án (✍️ Nhập tay / ⚙️ Tự động):**
+* **Giai đoạn dự án (Chuẩn bị / Thực hiện / Kết thúc) (*):** Cán bộ phụ trách chính chọn tương ứng với tiến trình dự án.
+* **Hiện trạng dự án (10 mã hiện trạng) (*):** Chọn đúng mã hiện trạng thực tế:
+  * *Mã 1:* Duyệt chủ trương (Có QĐ chủ trương đầu tư)
+  * *Mã 2:* Duyệt dự án chưa khởi công (Có QĐ phê duyệt dự án)
+  * *Mã 3:* Đang thi công (Đã khởi công thực tế)
+  * *Mã 4:* Hoàn thành chưa bàn giao (Có BB nghiệm thu hoàn thành xây dựng)
+  * *Mã 5:* Bàn giao chưa trình quyết toán (Có biên bản bàn giao)
+  * *Mã 6:* Đã trình chưa duyệt quyết toán (Đã nộp hồ sơ quyết toán)
+  * *Mã 7:* Đã quyết toán còn công nợ (Có QĐ phê duyệt quyết toán)
+  * *Mã 8:* Xử lý tài chính (Hết nhiệm vụ chi, còn tồn đọng)
+  * *Mã 9:* Dự án kết thúc (Xử lý xong toàn bộ công nợ)
+  * *Mã 10:* Chưa nhận bàn giao từ CĐT cũ (Dự án tiếp nhận)
 
-| STT | Trường | Ký hiệu | Vị trí trên phần mềm | Ghi chú |
-|---|---|---|---|---|
-| 14 | Giai đoạn (Chuẩn bị/Thực hiện/Kết thúc) (*) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Hiện trạng & Tiến độ | Chọn từ dropdown: Chuẩn bị dự án / Thực hiện dự án / Kết thúc xây dựng |
-| 15 | Hiện trạng dự án (*) | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Hiện trạng & Tiến độ | 1 trong 10 mã (mục 5.5) |
-| 16 | Ngày khởi công | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Hiện trạng & Tiến độ | Bắt buộc nếu hiện trạng ≥ 3 |
-| 17 | Ngày hoàn thành dự kiến | ✍️ Nhập tay | Tab Thông tin chung → Phân mục Hiện trạng & Tiến độ | Bắt buộc nếu đang thi công |
-| 18 | **Tiến độ chung (%)** | ⚙️ Tự động | Tab Kế hoạch (hoặc Tab Thi công) | Trung bình tiến độ các nhiệm vụ của dự án |
-| 19 | Tiến độ tài chính / Tỷ lệ giải ngân (%) | ⏳ Đang bổ sung | Tab Vốn (hoặc Tab Quyết toán) | Sẽ tự tính = Tổng giải ngân / Tổng KHV |
-| 20 | Tiến độ vật lý (%) | ⏳ Đang bổ sung | Tab Thi công | Sẽ tự tính từ khối lượng nghiệm thu |
+---
 
-> **Quan trọng:** **Tiến độ chung không nhập tay.** Muốn thay đổi tiến độ dự án → cập nhật tiến độ từng nhiệm vụ.
+### Điều 6. Nhập liệu Tab KẾ HOẠCH (plan)
 
-#### 5.5. Bảng hiện trạng dự án (10 mã)
+Tab Kế hoạch quản lý toàn bộ sơ đồ phân rã công việc (WBS), Gantt chart tiến độ và ma trận phân công trách nhiệm RACI.
 
-| Mã | Hiện trạng | Điều kiện chuyển vào |
-|---|---|---|
-| 1 | Duyệt chủ trương | Có QĐ chủ trương đầu tư |
-| 2 | Duyệt dự án chưa khởi công | Có QĐ phê duyệt dự án |
-| 3 | Đang thi công | Đã khởi công thực tế |
-| 4 | Hoàn thành chưa bàn giao | Có biên bản nghiệm thu hoàn thành |
-| 5 | Bàn giao chưa trình quyết toán | Có biên bản bàn giao |
-| 6 | Đã trình chưa duyệt quyết toán | Đã nộp hồ sơ quyết toán |
-| 7 | Đã quyết toán còn công nợ | Có QĐ phê duyệt quyết toán |
-| 8 | Xử lý tài chính | Hết nhiệm vụ chi, còn tồn đọng |
-| 9 | Dự án kết thúc | Xử lý xong toàn bộ |
-| 10 | Chưa nhận bàn giao từ CĐT cũ | Dự án tiếp nhận |
+1. **Khởi tạo kế hoạch thực hiện dự án (Master Plan):** Trong vòng 5 ngày làm việc kể từ khi dự án được khởi tạo, Cán bộ phụ trách chính bắt buộc phải vào tab Kế hoạch để khởi tạo Master Plan.
+2. **Thiết lập WBS:** Lựa chọn Quy trình mẫu tương ứng (1 bước, 2 bước hoặc 3 bước) và Chế độ lập lịch (Tự động - Auto hoặc Thủ công - Manual) để hệ thống tự động sinh danh sách đầu việc bản thảo.
+3. **Điều chỉnh tiến độ và Cascade:** Điều chỉnh ngày bắt đầu, hạn hoàn thành của từng bước công việc. Bắt buộc bật tính năng **Cascade (Tự động xâu chuỗi)** để khi thay đổi tiến độ của một bước, hệ thống sẽ tự động cập nhật các bước phụ thuộc phía sau.
+4. **Cấu hình ma trận trách nhiệm RACI:** Thực hiện gán vai trò R (Thực hiện), A (Chịu trách nhiệm chính), C (Phối hợp), I (Nhận thông tin) cho từng bước công việc cho các thành viên dự án.
 
-### Điều 6. Thông tin pháp lý dự án (đều ✍️ Nhập tay)
+---
 
-| Cụm | Trường | Bắt buộc | Vị trí trên phần mềm | Ghi chú |
-|---|---|---|---|---|
-| Chủ trương đầu tư | Cấp QĐ, Số QĐ, Ngày ban hành, Cơ quan ban hành | Có | Tab Thông tin chung → Phân mục Thông tin pháp lý | Quyết định phê duyệt chủ trương đầu tư |
-| Phê duyệt dự án | Số QĐ, Ngày phê duyệt, Cơ quan phê duyệt | Có | Tab Thông tin chung → Phân mục Thông tin pháp lý | Quyết định phê duyệt dự án đầu tư |
-| Thiết kế – Dự toán | Số QĐ phê duyệt TK-DT, Ngày QĐ, Cơ quan thẩm định, Tổng dự toán | Bắt buộc khi vào giai đoạn Thực hiện | Tab Thông tin chung → Phân mục Thông tin pháp lý | Thiết kế bản vẽ thi công và dự toán |
-| Nhận bàn giao (nếu có) | Chủ đầu tư cũ, Số QĐ chuyển CĐT, Cấp QĐ trước bàn giao | Khi tiếp nhận | Tab Thông tin chung → Phân mục Thông tin pháp lý | Dành cho dự án tiếp nhận |
+### Điều 7. Nhập liệu Tab GÓI THẦU (packages)
 
-### Điều 7. Thông tin quy mô công trình (đều ✍️ Nhập tay)
+Tab Gói thầu quản lý thông tin các gói thầu và kết quả lựa chọn nhà thầu (LCNT).
 
-Nhập tại **Tab Thông tin chung → Phân mục Quy mô công trình**:
+1. **Khởi tạo gói thầu (✍️ Nhập tay):** Mọi gói thầu trong kế hoạch lựa chọn nhà thầu (KHLCNT) được duyệt phải được tạo mới trên hệ thống.
+2. **Quy định nhập liệu gói thầu (thực hiện qua 4 tab nhỏ trong modal):**
+   * *Tab Thông tin cơ bản:* Nhập Số hiệu, Tên gói thầu, Giá gói thầu, Thời gian thực hiện, Nguồn vốn.
+   * *Tab Phân loại pháp lý:* Chọn Lĩnh vực (Xây lắp / Tư vấn / Phi tư vấn / Hàng hóa / Hỗn hợp), Hình thức LCNT, Phương thức LCNT, Đấu thầu qua mạng, Loại hợp đồng.
+   * *Tab Mốc thời gian:* Nhập Mã TBMT, Ngày đăng tải, Thời điểm đóng/mở thầu.
+   * *Tab Kết quả LCNT:* Khi có kết quả lựa chọn nhà thầu, nhập Giá trúng thầu, Ngày phê duyệt kết quả và chọn Nhà thầu trúng thầu từ danh sách.
+3. **Chuyển đổi trạng thái gói thầu:** Khi chuyển trạng thái gói thầu sang **Đang thực hiện** (đã ký hợp đồng), bắt buộc phải cập nhật đầy đủ thông tin tại *Tab Kết quả LCNT*. Hệ thống sẽ tự động ngăn chặn nếu thiếu thông tin trúng thầu.
 
-DT khu đất, DT xây dựng, DT sàn, Chiều cao, Mật độ xây dựng, Hệ số sử dụng đất, Số tầng nổi, Số tầng hầm, Tổng dự toán ban đầu.
+---
 
-### Điều 8. Thông tin nhân sự dự án (✍️ Nhập tay nhân sự / ⚙️ Tự động liên kết nhà thầu)
+### Điều 8. Nhập liệu Tab THI CÔNG (construction)
 
-| Trường | Bắt buộc | Vị trí trên phần mềm | Nguồn |
-|---|---|---|---|
-| Kế toán theo dõi (*) | Có | Tab Thông tin chung → Phân mục Nhân sự & Thành viên | Chọn từ bộ phận Kế toán (thuộc Phòng HCTH) |
-| Giám đốc QLDA (*) | Có | Tab Thông tin chung → Phân mục Nhân sự & Thành viên | Chỉ định vị trí Giám đốc Ban QLDA phụ trách (lãnh đạo chỉ rà soát/phê duyệt, không nhập liệu) |
-| Cán bộ phụ trách chính (*) | Có | Tab Thông tin chung → Phân mục Nhân sự & Thành viên | Chọn từ cán bộ kỹ thuật (chuyên viên) thuộc phòng QLDA đang phụ trách dự án đó (QLDA1/2/3) |
-| Nhà thầu (BCNCKT, khảo sát, thẩm tra, thi công...) | ⚙️ Tự động (Cập nhật sau) | Tab Thông tin chung → Phân mục Nhân sự & Thành viên | Được cập nhật tự động từ phân hệ Đấu thầu (gói thầu) khi có kết quả trúng thầu — không nhập khi khởi tạo dự án ban đầu |
+Tab Thi công ghi nhận nhật ký hiện trường hàng ngày và tiến độ xây lắp vật lý của dự án.
 
+1. **Nhập nhật ký thi công hiện trường hàng ngày (✍️ Nhập tay):**
+   * Hạn nhập: Trước **08:00 sáng ngày hôm sau**.
+   * Dữ liệu bắt buộc gồm: Thời tiết, nhiệt độ; số lượng nhân lực thi công thực tế tại công trường (phân chia theo nhà thầu); số lượng máy móc thiết bị đang hoạt động; mô tả chi tiết công việc triển khai trong ngày; tải lên tối thiểu 2 ảnh chụp thực địa.
+   * Cán bộ có thể sử dụng chức năng *Sao chép dữ liệu ngày hôm trước* để điền nhanh và sửa đổi số liệu thực tế.
+2. **Cập nhật tiến độ hạng mục (✍️ Nhập tay):**
+   * Định kỳ trước **17:00 thứ Sáu hàng tuần**, cán bộ phụ trách dự án phải rà soát và cập nhật tỷ lệ hoàn thành (%) thực tế của từng hạng mục xây lắp cốt lõi tại phân mục Tiến độ nhà thầu.
 
-### Điều 8b. Thông tin gói thầu dự án (Bidding Package)
+---
 
-1. **Bắt buộc khởi tạo:** Mọi gói thầu thuộc dự án đầu tư phải được tạo đầy đủ trên hệ thống tại Tab Gói thầu của dự án tương ứng.
-2. **Quy định trường thông tin:**
-   - *Thông tin cơ bản (Số hiệu, Tên gói thầu, Giá gói thầu, Thời gian thực hiện, Nguồn vốn)*: Bắt buộc điền đúng theo Quyết định phê duyệt Kế hoạch lựa chọn nhà thầu (KHLCNT).
-   - *Thông tin pháp lý*: Ghi nhận đúng Lĩnh vực, Hình thức lựa chọn nhà thầu, Phương thức lựa chọn, Đấu thầu qua mạng, và Loại hợp đồng theo quy định của Luật Đấu thầu hiện hành.
-3. **Quy tắc chuyển đổi trạng thái gói thầu:**
-   - Trạng thái gói thầu bao gồm: *Lựa chọn nhà thầu* (mới tạo, đang chuẩn bị/đang đấu thầu), *Đang thực hiện* (đã ký hợp đồng thi công/thực hiện), và *Kết thúc* (hoàn thành thanh quyết toán gói thầu).
-   - **Ràng buộc hệ thống:** Khi chuyển trạng thái gói thầu từ "Lựa chọn nhà thầu" sang "Đang thực hiện", bắt buộc phải hoàn thành việc cập nhật **Nhà thầu trúng thầu**, **Giá trúng thầu**, và **Ngày phê duyệt kết quả LCNT**. Hệ thống sẽ cảnh báo ngăn chặn nếu thiếu các thông tin này.
+### Điều 9. Nhập liệu Tab VỐN & GIẢI NGÂN (capital)
 
-### Điều 8c. Thông tin kế hoạch vốn và giải ngân dự án
+Tab Vốn & Giải ngân quản lý kế hoạch vốn năm/trung hạn, kế hoạch giải ngân 12 tháng và lịch sử giải ngân thực tế.
 
-1. **Kế hoạch vốn (Mid-term / Annual Capital Plan):**
-   - Bắt buộc cập nhật kế hoạch vốn trung hạn và kế hoạch vốn năm ngay khi nhận được Quyết định giao kế hoạch vốn của cấp có thẩm quyền (HĐND Tỉnh, UBND Tỉnh, Thủ tướng Chính phủ...).
-   - Hồ sơ nhập liệu phải điền đầy đủ: Năm/Giai đoạn, Số quyết định giao vốn, Ngày quyết định, Nguồn vốn chi tiết, và Số vốn phân bổ.
-2. **Kế hoạch giải ngân tháng (Monthly Disbursement Plan):**
-   - Trước ngày **31/01** hàng năm hoặc trong vòng **10 ngày** kể từ khi nhận được kế hoạch vốn năm, cán bộ phụ trách dự án trực tiếp lập kế hoạch giải ngân chi tiết cho 12 tháng.
-   - **Ràng buộc:** Tổng kế hoạch giải ngân 12 tháng không được phép vượt quá giới hạn vốn năm được phân bổ của dự án.
-3. **Bút toán giải ngân thực tế (Disbursements):**
-   - Trong vòng **24 giờ** kể từ khi Kho bạc Nhà nước thực hiện chuyển tiền (thanh toán/tạm ứng), bộ phận Kế toán (kế toán viên phụ trách) phải ghi nhận bút toán giải ngân thực tế vào hệ thống.
-   - Phải chọn đúng **Loại giải ngân**: *Tạm ứng*, *Thanh toán KLHT* (Khối lượng hoàn thành), hoặc *Thu hồi tạm ứng* làm cơ sở để hệ thống tự động kiểm soát số dư tạm ứng.
-   - Phải liên kết đợt giải ngân với đúng kế hoạch vốn năm tương ứng và ghi rõ số chứng từ/quyết định thanh toán.
-4. **Kiểm soát cảnh báo tự động:**
-   - Cán bộ nghiệp vụ (chuyên viên/kỹ sư) có trách nhiệm thường xuyên rà soát và xử lý các cảnh báo từ hệ thống ở phân hệ Vốn (giải ngân vượt kế hoạch năm, tổng vốn giao vượt tổng mức đầu tư, số dư tạm ứng tồn đọng kéo dài, v.v.). Mọi sai lệch số liệu phải được sửa đổi trong vòng 4 giờ.
+1. **Nhập kế hoạch vốn (Capital Plans) (✍️ Nhập tay):**
+   * Cập nhật kế hoạch vốn trung hạn và kế hoạch vốn năm ngay khi nhận được Quyết định giao kế hoạch vốn.
+   * Dữ liệu bắt buộc: Giai đoạn/Năm, Số quyết định giao vốn, Ngày quyết định, Nguồn vốn chi tiết, Số vốn phân bổ.
+2. **Lập kế hoạch giải ngân tháng (Disbursement Plan) (✍️ Nhập tay):**
+   * Trước ngày **31/01** hàng năm, Cán bộ phụ trách dự án phải lập kế hoạch giải ngân chi tiết từ tháng 1 đến tháng 12 tại hệ thống.
+   * **Ràng buộc:** Tổng kế hoạch giải ngân 12 tháng không được phép vượt quá giới hạn vốn năm được phân bổ của dự án.
+3. **Ghi nhận giải ngân thực tế (Disbursements) (✍️ Nhập tay):**
+   * Trong vòng **24 giờ** kể từ khi Kho bạc Nhà nước chuyển tiền thanh toán, Cán bộ phụ trách dự án (dựa trên thông tin/chứng từ do Kế toán viên cung cấp) phải ghi nhận bút toán giải ngân thực tế.
+   * Dữ liệu bắt buộc: Số tiền, Ngày giải ngân, Số chứng từ/quyết định thanh toán, Nhà thầu thụ hưởng, Loại giải ngân (*Tạm ứng*, *Thanh toán KLHT*, hoặc *Thu hồi tạm ứng*).
+   * Hệ thống tự động tính lũy kế và kiểm soát số dư tạm ứng thực tế.
 
-### Điều 8d. Thông tin nhật ký thi công và tiến độ xây lắp (Tab Thi công)
+---
 
-1. **Nhập nhật ký hiện trường hàng ngày:**
-   - Kỹ sư phụ trách dự án (Ban QLDA) chịu trách nhiệm lập nhật ký hiện trường hàng ngày trên hệ thống (hoạt động thu thập dữ liệu hiện trường từ Tư vấn giám sát bên ngoài để cập nhật).
-   - Nội dung nhật ký bắt buộc gồm: Thời tiết/Nhiệt độ, Tổng số nhân công thi công trên công trường, Số lượng máy móc thiết bị đang hoạt động, Mô tả chi tiết nội dung công việc triển khai trong ngày, và đính kèm tối thiểu 2 hình ảnh thực địa.
-   - Hạn nhập: Trước **08:00 sáng ngày hôm sau**.
-2. **Cập nhật tiến độ thi công:**
-   - Định kỳ trước 17:00 thứ Sáu hàng tuần, kỹ sư phụ trách dự án phải rà soát và cập nhật tỷ lệ hoàn thành (%) thực tế của từng hạng mục thi công (San nền, Xây dựng thô, Cơ điện...).
+### Điều 10. Nhập liệu Tab THANH TRA (inspection)
 
-### Điều 8e. Thông tin Giải phóng mặt bằng (Tab GPMB) và Mô hình BIM (Tab BIM)
+Tab Thanh tra lưu trữ lịch sử các cuộc thanh tra, kiểm tra dự án.
 
-1. **Giải phóng mặt bằng:**
-   - Ngay sau khi có quyết định phê duyệt phương án bồi thường GPMB, cán bộ phụ trách dự án phải khởi tạo quy trình GPMB 16 bước trên hệ thống.
-   - Số liệu tổng quan (diện tích thu hồi, số hộ tái định cư, kinh phí bồi thường, lũy kế giải ngân GPMB) phải được cập nhật định kỳ trước ngày 05 hàng tháng.
-   - Trạng thái và ngày hoàn thành thực tế của từng bước trong 16 bước quy trình phải được ghi nhận trong vòng 24 giờ kể từ khi hoàn tất thủ tục tương ứng.
-2. **Mô hình BIM:**
-   - Đối với các dự án thuộc diện bắt buộc áp dụng mô hình thông tin công trình (BIM) theo quy định của Chính phủ, cán bộ phụ trách dự án phải upload file mô hình định dạng `.ifc` lên hệ thống.
-   - Thường xuyên cập nhật phiên bản mô hình khi có điều chỉnh thiết kế.
+1. **Thời hạn nhập:** Trong vòng **48 giờ** kể từ khi nhận được kết luận thanh tra, kiểm tra chính thức của cơ quan có thẩm quyền hoặc biên bản kiểm tra nội bộ.
+2. **Nội dung nhập liệu (✍️ Nhập tay):**
+   * Bấm **Thêm đợt kiểm tra**, điền đầy đủ: Ngày kiểm tra, Cơ quan/Đoàn kiểm tra, Nội dung kiểm tra, Kết luận/Kiến nghị chính, Trạng thái khắc phục sai lỗi, và đính kèm văn bản kết luận dạng PDF.
 
-### Điều 8f. Thông tin tài liệu, kiểm tra và quyết toán dự án (Tab Tài liệu, Kiểm tra, Quyết toán)
+---
 
-1. **Tài liệu dự án:**
-   - Mọi hồ sơ pháp lý, quyết định phê duyệt, bản vẽ thiết kế, hợp đồng và biên bản nghiệm thu phải được tải lên hệ thống tại tab Tài liệu.
-   - Định dạng tên file tải lên bắt buộc phải tuân thủ quy tắc đặt tên tại Phụ lục A.
-2. **Thanh tra / Kiểm tra:**
-   - Trong vòng 48 giờ sau khi nhận được kết luận thanh tra, kiểm tra của các cơ quan có thẩm quyền hoặc biên bản kiểm tra nội bộ, cán bộ phụ trách dự án phải ghi nhận thông tin cuộc kiểm tra (ngày kiểm tra, cơ quan kiểm tra, kiến nghị kết luận, tình hình khắc phục) vào tab Kiểm tra.
-3. **Quyết toán dự án hoàn thành:**
-   - Trong vòng 5 ngày sau khi lập báo cáo quyết toán hoặc nhận được Quyết định phê duyệt quyết toán dự án hoàn thành, bộ phận Kế toán (kế toán viên phụ trách) phải cập nhật đầy đủ thông tin: Giá trị đề nghị quyết toán, Giá trị được duyệt quyết toán, Số quyết định phê duyệt quyết toán, Ngày quyết định phê duyệt và theo dõi công nợ còn lại.
+### Điều 11. Nhập liệu Tab QUYẾT TOÁN (settlement)
 
-### Điều 9. Cập nhật dữ liệu dự án định kỳ
+Tab Quyết toán quản lý thủ tục quyết toán vốn đầu tư dự án hoàn thành.
 
-Trước ngày **05** hàng tháng, cán bộ phụ trách dự án cập nhật:
+1. **Thời hạn nhập:** Trong vòng **5 ngày** kể từ khi có Quyết định phê duyệt quyết toán dự án hoàn thành.
+2. **Nội dung nhập liệu (✍️ Nhập tay):**
+   * Cán bộ phụ trách dự án (phối hợp với Kế toán viên cung cấp số liệu) cập nhật hồ sơ quyết toán: Giá trị đề nghị quyết toán (VNĐ), Giá trị được phê duyệt quyết toán (VNĐ), Số quyết định phê duyệt quyết toán, Ngày quyết định phê duyệt.
+   * Hệ thống sẽ tự động tổng hợp số liệu thanh toán thực tế từ lịch sử hợp đồng và giải ngân để tính toán chênh lệch và dư nợ công nợ.
 
-1. Hiện trạng dự án (nếu thay đổi) - Nhập tại **Tab Thông tin chung → Phân mục Hiện trạng & Tiến độ**.
-2. Số liệu khối lượng và đợt giải ngân trong kỳ - Nhập tại **Tab Vốn → Đợt giải ngân**. *Tiến độ tài chính sẽ tự tính sau khi tính năng được bổ sung.*
-3. Tình hình thực tế và vướng mắc (nếu có) - Nhập tại **Tab Thông tin chung → Phân mục Hiện trạng & Tiến độ**.
+---
 
-> **Không nhập tay** Tiến độ chung, Tổng KHV, Tổng giải ngân — các trường này hệ thống tự tính (Điều 5.3, tài liệu Khảo sát).
+### Điều 12. Nhập liệu Tab QUY TRÌNH (workflow)
+
+Tab Quy trình theo dõi tiến độ thực hiện các bước thủ tục pháp lý dự án theo các quy trình mẫu.
+
+1. **Cập nhật tiến độ:** Định kỳ hàng tuần hoặc ngay khi hoàn thành một bước thủ tục, cán bộ phụ trách dự án phải vào tab Quy trình cập nhật trạng thái thực hiện, ngày hoàn thành thực tế và đính kèm sản phẩm đầu ra của bước.
+2. **Lưu ý:** Việc cập nhật quy trình này phục vụ theo dõi SLA và báo cáo, không thay thế cho quy trình phê duyệt giấy ngoài hệ thống.
+
+---
+
+### Điều 13. Nhập liệu Tab GPMB (clearance)
+
+Tab GPMB theo dõi tổng hợp số liệu Giải phóng mặt bằng và bồi thường, tái định cư.
+
+1. **Khởi tạo thông tin:** Ngay sau khi có quyết định phê duyệt phương án bồi thường GPMB, cán bộ phụ trách dự án bấm **Khởi tạo Thông tin GPMB** tại tab GPMB để tạo bản ghi quản lý.
+2. **Cập nhật số liệu tổng hợp (✍️ Nhập tay):**
+   * Thời hạn: Định kỳ trước **ngày 05 hàng tháng**.
+   * Số liệu bắt buộc: Tổng diện tích thu hồi đất (ha), Diện tích đã bàn giao (ha), Tổng số hộ ảnh hưởng, Số hộ đã tái định cư, Tổng kinh phí bồi thường, số tiền bồi thường đã giải ngân thực tế và Trạng thái chung (Chưa bắt đầu / Đang thực hiện / Hoàn thành).
+
+---
+
+### Điều 14. Nhập liệu Tab HỒ SƠ (documents)
+
+Tab Hồ sơ quản lý toàn bộ kho lưu trữ tài liệu pháp lý và kỹ thuật số của dự án.
+
+1. **Tải lên tài liệu:** Mọi hồ sơ pháp lý, quyết định phê duyệt, bản vẽ thiết kế, hợp đồng và biên bản nghiệm thu phải được tải lên hệ thống tại tab Hồ sơ ngay khi ban hành.
+2. **Quy tắc đặt tên file:** Tên file tải lên bắt buộc phải tuân thủ đúng Quy tắc đặt tên tệp đính kèm quy định tại **Phụ lục A** (ví dụ: `QD_[SốQĐ]_[NgàyKý]_[TómTắt]`).
+
+---
+
+### Điều 15. Nhập liệu Tab ĐỒNG BỘ CSDL (tt24)
+
+Tab Đồng bộ CSDL quản lý việc đồng bộ dữ liệu dự án lên Cơ sở dữ liệu quốc gia (đáp ứng Thông tư 24/2024/TT-BTC).
+
+1. **Thực hiện đồng bộ:** Sau khi hoàn tất cập nhật các số liệu dự án, gói thầu và giải ngân định kỳ hàng tháng, Cán bộ phụ trách chính vào tab **Đồng bộ CSDL** thực hiện lệnh đồng bộ dữ liệu.
+2. **Kiểm tra lỗi đồng bộ:** Rà soát các cảnh báo lỗi do hệ thống trả về từ Cổng thông tin quốc gia, thực hiện sửa chữa dữ liệu sai lệch trong vòng 4 giờ và thực hiện đồng bộ lại.
+
+---
+
+### Điều 16. Cập nhật dữ liệu dự án định kỳ
+
+Trước ngày **05** hàng tháng, Cán bộ phụ trách dự án có trách nhiệm vào các Tab chi tiết tương ứng để cập nhật:
+1. Hiện trạng dự án (nếu thay đổi) - Nhập tại **Tab Tổng quan**.
+2. Kế hoạch giải ngân tháng và số liệu giải ngân thực tế phát sinh trong tháng - Nhập tại **Tab Vốn & Giải ngân**.
+3. Số liệu tổng hợp GPMB phát sinh - Nhập tại **Tab GPMB**.
+4. Các tài liệu pháp lý phát sinh mới trong tháng - Tải lên tại **Tab Hồ sơ**.
+
+> ⚙️ **Quy định an toàn:** Tuyệt đối không tìm cách nhập tay các trường: Nhóm dự án, Tiến độ chung, Tổng giải ngân, Tổng kế hoạch vốn — các trường này hệ thống tự tính và khóa cứng.
 
 
 ## CHƯƠNG III. QUY ĐỊNH NHẬP LIỆU NHIỆM VỤ / CÔNG VIỆC
@@ -456,27 +481,34 @@ Mỗi bước dự án được gán 4 nhóm trách nhiệm:
 
 ### Điều 23. Ma trận phân quyền nhập liệu
 
-Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / Sửa / Xóa**. (Chưa có quyền "Phê duyệt".)
+Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / Sửa / Xóa**. (Chưa có quyền "Phê duyệt" điện tử.)
 
-| Chức năng | Quản trị | GĐ / PGĐ | Kế toán trưởng | Trưởng phòng | Phó phòng | Chuyên viên | Nhân viên |
+| Phân hệ / Tab chức năng | Quản trị hệ thống | Ban Giám đốc (GĐ/PGĐ) | Kế toán trưởng | Trưởng / Phó phòng | Chuyên viên QLDA (Cán bộ phụ trách chính) | Chuyên viên phòng khác (KHDT, KTTD, HCTH) | Nhân viên hành chính |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Dự án** | | | | | | | |
-| Tạo dự án | Tạo,Sửa,Xóa | Xem | Xem | Xem | Xem | Tạo,Sửa (Chuyên viên KHDT) | Xem |
-| Sửa thông tin dự án | Tạo,Sửa,Xóa | Xem | Xem | Xem | Xem | Tạo,Sửa (Kỹ sư phụ trách) | Xem |
-| Xóa dự án | Xóa | Xem | — | — | — | — | — |
-| **Nhiệm vụ** | | | | | | | |
-| Tạo nhiệm vụ | Tạo | Xem | Xem | Xem | Xem | Tạo | Xem |
-| Sửa nhiệm vụ | Sửa | Xem | Xem | Xem | Xem | Sửa (của mình) | Xem |
-| Xóa nhiệm vụ | Xóa | — | — | — | — | — | — |
-| **Kế hoạch** | | | | | | | |
-| Nhập / Sửa KH tháng | Tạo,Sửa | Xem | Xem | Xem | Xem | Tạo,Sửa | Xem |
-| Cập nhật kết quả tháng | Sửa | Xem | Xem | Xem | Xem | Sửa (của mình) | Xem |
-| **Quy trình / Vốn** | | | | | | | |
-| Bước dự án, phân công trách nhiệm | Tạo,Sửa,Xóa | Xem | Xem | Xem | Xem | Tạo,Sửa (Kỹ sư phụ trách) | Xem |
-| Nhập số liệu thanh toán, giải ngân | Tạo,Sửa,Xóa | Xem | Xem | Xem | Xem | Tạo,Sửa (Kế toán viên) | Xem |
-| Nhập kế hoạch vốn | Tạo,Sửa,Xóa | Xem | Xem | Xem | Xem | Tạo,Sửa (Chuyên viên KHDT) | Xem |
+| **DỰ ÁN & 11 TAB CHI TIẾT** | | | | | | | |
+| Khởi tạo dự án | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem | Xem |
+| Tab 1: Tổng quan (`info`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem (Cung cấp thông tin) | Xem |
+| Tab 2: Kế hoạch (`plan`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem | Xem |
+| Tab 3: Gói thầu (`packages`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem (Cung cấp quyết định/HĐ) | Xem |
+| Tab 4: Thi công (`construction`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem | Xem |
+| Tab 5: Vốn & Giải ngân (`capital`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem (Cung cấp chứng từ) | Xem |
+| Tab 6: Thanh tra (`inspection`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem | Xem |
+| Tab 7: Quyết toán (`settlement`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem (Cung cấp số liệu QT) | Xem |
+| Tab 8: Quy trình (`workflow`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem | Xem |
+| Tab 9: GPMB (`clearance`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Chỉ dự án được giao) | Xem | Xem |
+| Tab 10: Hồ sơ (`documents`) | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa, Xóa (Dự án được giao) | Xem | Xem |
+| Tab 11: Đồng bộ CSDL (`tt24`) | Tạo, Sửa | Xem | Xem | Xem | Sửa (Thực hiện đồng bộ) | Xem | Xem |
+| **NHIỆM VỤ & KẾ HOẠCH THÁNG** | | | | | | | |
+| Tạo / Sửa Nhiệm vụ | Tạo, Sửa, Xóa | Xem | Xem | Xem | Tạo, Sửa (Nhiệm vụ cá nhân) | Tạo, Sửa (Nhiệm vụ cá nhân) | Xem |
+| Nhập / Sửa Kế hoạch tháng | Tạo, Sửa | Xem | Xem | Xem | Tạo, Sửa (Kế hoạch cá nhân) | Tạo, Sửa (Kế hoạch cá nhân) | Tạo, Sửa (cá nhân) |
+| Cập nhật Kết quả tháng | Tạo, Sửa | Xem | Xem | Xem | Sửa (Kết quả cá nhân) | Sửa (Kết quả cá nhân) | Sửa (cá nhân) |
 
-> **Chú thích:** Ô trống/— nghĩa là chỉ được Xem hoặc không có quyền. Lãnh đạo cấp Ban và Trưởng/Phó phòng thực hiện rà soát và duyệt ngoài hệ thống, trên hệ thống chỉ có quyền Xem và giám sát tiến độ để đảm bảo tính phân cấp, không trực tiếp thao tác ghi dữ liệu thô.
+> **Chú thích:** 
+> - Ô trống hoặc "Xem" nghĩa là người dùng chỉ được quyền Xem dữ liệu trên hệ thống, không có quyền chỉnh sửa trực tiếp.
+> - Ban Giám đốc và Trưởng/Phó phòng thực hiện rà soát và phê duyệt hồ sơ giấy hoặc bản xuất báo cáo ngoài hệ thống; trên hệ thống chỉ thực hiện quyền Xem và giám sát tiến độ để đảm bảo tính phân cấp quản lý.
+> - **Cán bộ phụ trách chính (Kỹ sư QLDA)** là người duy nhất thực hiện nhập liệu, cập nhật và đính kèm hồ sơ cho toàn bộ 11 Tab của dự án được giao. 
+> - Chuyên viên các phòng ban khác (KHDT, KTTD, Kế toán thuộc HCTH) có trách nhiệm cung cấp thông tin, hồ sơ pháp lý, chứng từ thanh toán/quyết toán kịp thời cho Cán bộ phụ trách chính để nhập liệu, không trực tiếp thao tác ghi dữ liệu dự án trên hệ thống.
+
 
 
 ## CHƯƠNG VII. CHẤT LƯỢNG DỮ LIỆU VÀ XỬ LÝ SAI SÓT
@@ -555,12 +587,12 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 
 | Vai trò | Nhiệm vụ | Tần suất |
 |----------------|----------|----------|
-| **Kế toán trưởng / Phó phòng phụ trách Kế toán** | Kiểm soát nội bộ số liệu tài chính, hợp đồng trên hệ thống (Không nhập liệu) | Tháng (ngày 10) |
+| **Kế toán trưởng / Phó phòng phụ trách Kế toán** | Kiểm soát nội bộ số liệu tài chính, hợp đồng trên hệ thống (Không trực tiếp nhập liệu) | Tháng (ngày 10) |
 | | Rà soát báo cáo tài chính, kế hoạch giải ngân, hợp đồng | Tháng/Quý |
-| **Kế toán viên (Theo dõi dự án)** | Nhập đợt giải ngân, hồ sơ thanh toán, thông tin hợp đồng | Khi phát sinh |
-| | Cập nhật thông tin "Kế toán theo dõi" trên dự án được phân công | Khi phát sinh |
+| **Kế toán viên (Theo dõi dự án)** | Cung cấp thông tin đợt giải ngân, hồ sơ thanh toán, thông tin hợp đồng cho Cán bộ phụ trách chính nhập liệu | Khi phát sinh (24h) |
+| | Cung cấp thông tin phân công kế toán theo dõi dự án cho Cán bộ phụ trách chính gán trên hệ thống | Khi phát sinh |
 | | Nhập KH tháng, cập nhật tiến độ tuần, kết quả tháng | Theo lịch |
-| **Kế toán viên (Theo dõi tạm ứng)** | Nhập đợt giải ngân, tạm ứng, thu hồi tạm ứng, thông tin hợp đồng | Khi phát sinh |
+| **Kế toán viên (Theo dõi tạm ứng)** | Cung cấp thông tin đợt giải ngân, tạm ứng, thu hồi tạm ứng, thông tin hợp đồng cho Cán bộ phụ trách chính nhập liệu | Khi phát sinh (24h) |
 | | Nhập KH tháng, cập nhật tiến độ tuần, kết quả tháng | Theo lịch |
 
 ### Hướng dẫn thao tác đặc thù
@@ -570,14 +602,9 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 2. Kiểm tra lần lượt các phòng ban đã cập nhật kết quả.
 3. Xuất bảng tổng hợp (Excel) trình Chánh Văn phòng và Ban Giám đốc Ban.
 
-**Nhập đợt giải ngân (Kế toán viên):**
-1. Vào **Dự án** → chọn DA → tab **Vốn** → **Thêm đợt giải ngân**.
-2. Nhập số tiền, ngày, nguồn vốn.
-3. ⚙️ Hệ thống tự cộng **Tổng giải ngân** — không nhập số tổng.
-
-**Cập nhật "Kế toán theo dõi" trên dự án:**
-1. Vào **Dự án** → chọn DA → tab **Nhà thầu / Nhân sự**.
-2. Mục "Kế toán theo dõi": chọn Kế toán viên được phân công phụ trách dự án. Lưu.
+**Cung cấp thông tin giải ngân và hợp đồng (Kế toán viên):**
+1. Tập hợp đầy đủ hồ sơ chứng từ thanh toán, giải ngân thực tế (số tiền, ngày giải ngân, số chứng từ, loại giải ngân...) và thông tin hợp đồng.
+2. Bàn giao bản giấy hoặc gửi file dữ liệu cho Cán bộ phụ trách chính (kỹ sư QLDA) trong vòng 24 giờ kể từ khi phát sinh nghiệp vụ để Cán bộ phụ trách chính nhập vào hệ thống.
 
 
 ## III. PHÒNG KẾ HOẠCH – ĐẤU THẦU (KHDT)
@@ -588,20 +615,19 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 |----------------|----------|----------|
 | **Trưởng phòng / Phó phòng KHDT** | Rà soát KH tháng phòng KHDT trên hệ thống, phê duyệt ngoài hệ thống (Không trực tiếp nhập liệu) | Tháng (ngày 28 tháng trước) |
 | | Kiểm tra chất lượng nhập liệu phòng | Tháng (ngày 10) |
-| **Chuyên viên (Kế hoạch vốn)** | Tạo dự án mới (thông tin cơ bản) khi có quyết định chủ trương đầu tư | Khi phát sinh |
-| | Nhập kế hoạch vốn theo năm, nhập quyết định giao kế hoạch vốn (KHV) | Năm/Quý/Khi phát sinh |
+| **Chuyên viên (Kế hoạch vốn)** | Cung cấp quyết định chủ trương đầu tư để Cán bộ phụ trách chính khởi tạo dự án mới trên hệ thống | Khi phát sinh (24h) |
+| | Cung cấp thông tin kế hoạch vốn theo năm, quyết định giao kế hoạch vốn (KHV) cho Cán bộ phụ trách chính nhập liệu | Năm/Quý/Khi phát sinh (24h) |
 | | Tổng hợp số liệu giải ngân từ các phòng QLDA | Tháng (ngày 05) |
 | | Nhập KH tháng, cập nhật tiến độ tuần, kết quả tháng | Theo lịch |
-| **Chuyên viên (Đấu thầu)** | Nhập kế hoạch lựa chọn nhà thầu, thông tin gói thầu khi bắt đầu đấu thầu | Khi phát sinh |
+| **Chuyên viên (Đấu thầu)** | Cung cấp quyết định phê duyệt kế hoạch lựa chọn nhà thầu, thông tin gói thầu cho Cán bộ phụ trách chính nhập liệu | Khi phát sinh (24h) |
 | | Nhập KH tháng, cập nhật tiến độ tuần, kết quả tháng | Theo lịch |
 
 ### Hướng dẫn thao tác đặc thù
 
-**Nhập nhiệm vụ đấu thầu (Chuyên viên đấu thầu):**
-1. Vào **Nhiệm vụ** → **Tạo mới**.
-2. Loại: Công việc dự án | Phân loại: Đấu thầu | Liên kết dự án.
-3. Tiêu đề ví dụ: Lập HSMT gói thầu XL-01 – DA Cầu Đò Quan.
-4. Sản phẩm: ghi rõ hồ sơ đầu ra (HSMT, báo cáo đánh giá...).
+**Cung cấp hồ sơ kế hoạch vốn và gói thầu (Chuyên viên KHDT):**
+1. Cung cấp file Quyết định giao vốn, Quyết định phê duyệt Kế hoạch lựa chọn nhà thầu cho Cán bộ phụ trách chính (kỹ sư QLDA) trong vòng 24 giờ kể từ khi ban hành.
+2. Cung cấp các thông tin chi tiết về gói thầu (tên gói thầu, giá gói thầu, hình thức lựa chọn nhà thầu, thời gian thực hiện...) cho Cán bộ phụ trách chính để cập nhật vào hệ thống.
+3. Chuyên viên đấu thầu vẫn tự lập và nhập **nhiệm vụ cá nhân** (phân loại nghiệp vụ Đấu thầu) trên tab Nhiệm vụ để theo dõi tiến độ công việc của mình.
 
 
 ## IV. PHÒNG KỸ THUẬT – THẨM ĐỊNH (KTTD)
@@ -612,24 +638,18 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 |----------------|----------|----------|
 | **Trưởng phòng / Phó phòng KTTD** | Rà soát KH tháng phòng KTTD trên hệ thống, phê duyệt ngoài hệ thống (Không trực tiếp nhập liệu) | Tháng (ngày 28 tháng trước) |
 | | Kiểm tra chất lượng nhập liệu phòng | Tháng (ngày 10) |
-| **Kỹ sư chính (Thẩm định)** | Nhập kết quả thẩm tra thiết kế - dự toán (TK-DT), TK bản vẽ thi công | Khi phát sinh (24h) |
-| | Cập nhật thông tin phê duyệt thiết kế trên dự án | Khi phát sinh (24h) |
+| **Kỹ sư chính (Thẩm định)** | Cung cấp thông tin và file kết quả thẩm định thiết kế, dự toán (TK-DT) cho Cán bộ phụ trách chính nhập liệu | Khi phát sinh (24h) |
+| | Cung cấp thông tin phê duyệt thiết kế để Cán bộ phụ trách chính cập nhật trên dự án | Khi phát sinh (24h) |
 | | Nhập KH tháng, cập nhật tiến độ tuần, kết quả tháng | Theo lịch |
-| **Kỹ sư (Quản lý chất lượng)** | Nhập thông tin quy mô công trình (Điều 7) | Khi phát sinh |
-| | Cập nhật kết quả nghiệm thu quản lý chất lượng (QLCL) | Khi phát sinh (24h) |
+| **Kỹ sư (Quản lý chất lượng)** | Cung cấp thông tin quy mô công trình (Điều 7) cho Cán bộ phụ trách chính nhập liệu | Khi phát sinh (24h) |
+| | Cung cấp kết quả nghiệm thu quản lý chất lượng (QLCL) cho Cán bộ phụ trách chính cập nhật | Khi phát sinh (24h) |
 | | Nhập KH tháng, cập nhật tiến độ tuần, kết quả tháng | Theo lịch |
 
 ### Hướng dẫn thao tác đặc thù
 
-**Nhập nhiệm vụ thẩm định (Kỹ sư thẩm định):**
-1. Vào **Nhiệm vụ** → **Tạo mới**.
-2. Loại: Công việc dự án | Phân loại: Thẩm định / Phê duyệt | Liên kết dự án.
-3. Tiêu đề: Thẩm tra hồ sơ TK BVTC – gói thầu [X] – DA [Y].
-4. Căn cứ pháp lý: ghi NĐ/TT liên quan.
-
-**Cập nhật thông tin thiết kế trên dự án (Kỹ sư thẩm định):**
-1. Vào **Dự án** → chọn DA → tab **Pháp lý**.
-2. Nhập: Số QĐ phê duyệt TK-DT, Ngày QĐ, Cơ quan thẩm định, Tổng dự toán, nhà thầu thiết kế/thẩm tra.
+**Cung cấp hồ sơ thẩm định thiết kế và quy mô công trình (Kỹ sư KTTD):**
+1. Cung cấp thông tin chi tiết và file Quyết định phê duyệt thiết kế - dự toán, hồ sơ quy mô công trình, biên bản nghiệm thu chất lượng cho Cán bộ phụ trách chính (kỹ sư QLDA) trong vòng 24 giờ kể từ khi phát sinh.
+2. Kỹ sư thẩm định vẫn tự lập và nhập **nhiệm vụ cá nhân** (phân loại nghiệp vụ Thẩm định / Phê duyệt) trên tab Nhiệm vụ để theo dõi tiến độ công việc của mình.
 
 
 ## V. BAN QUẢN LÝ DỰ ÁN 1 (QLDA1)
@@ -638,101 +658,81 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 
 | Vai trò | Nhiệm vụ | Tần suất |
 |----------------|----------|----------|
-| **Giám đốc / Phó Giám đốc Ban QLDA 1** | Rà soát KH tháng của phòng và kế hoạch thực hiện dự án (Master Plan / WBS / RACI) trên hệ thống (Không trực tiếp nhập liệu, phê duyệt ngoài hệ thống) | Tháng / Khi phát sinh |
-| | Kiểm tra chất lượng nhập liệu của Ban | Tháng (ngày 10) |
-| **Kỹ sư phụ trách dự án (Cán bộ kỹ thuật phụ trách chính)** | Cập nhật thông tin dự án kể từ sau khi được tạo mới cho đến khi kết thúc dự án | Khi phát sinh |
-| | Lập kế hoạch thực hiện dự án (Master Plan) và thiết lập bước dự án | Khi có DA mới (5 ngày) |
-| | Nhập thông tin nhà thầu thi công, thông tin gói thầu | Khi phát sinh |
-| | Nhập kế hoạch giải ngân chi tiết 12 tháng (tab Vốn) | Trước 31/01 hàng năm |
-| | Nhập nhật ký hiện trường hàng ngày, cập nhật tiến độ hạng mục | Hàng ngày / Tuần |
-| | Khởi tạo và cập nhật quy trình GPMB 16 bước, số liệu GPMB tổng hợp | Khi phát sinh / Tháng |
-| | Tải lên mô hình BIM, tải tài liệu dự án, ghi nhận kiểm tra, quyết toán dự án | Khi phát sinh / Quyết toán |
+| **Giám đốc / Phó Giám đốc Ban QLDA 1** | Rà soát kế hoạch tháng của phòng; rà soát kế hoạch thực hiện dự án (Master Plan / WBS / RACI) trên hệ thống (Không trực tiếp nhập liệu, phê duyệt ngoài hệ thống) | Tháng / Khi phát sinh |
+| | Kiểm tra chất lượng nhập liệu của Ban QLDA 1 | Tháng (ngày 10) |
+| **Kỹ sư phụ trách dự án (Cán bộ phụ trách chính)** | Chịu trách nhiệm nhập liệu, cập nhật và đính kèm hồ sơ cho toàn bộ 11 Tab của dự án được giao phụ trách | Liên tục / Khi phát sinh |
+| | Khởi tạo dự án mới, cập nhật thông tin pháp lý, quy mô đầu tư và phân công nhân sự dự án | Khi phát sinh (24h) |
+| | Lập kế hoạch thực hiện dự án (Master Plan), thiết lập bước và cấu hình ma trận trách nhiệm RACI | Khi có DA mới (5 ngày) |
+| | Nhập kế hoạch lựa chọn nhà thầu, thông tin chi tiết và cập nhật kết quả các gói thầu | Khi phát sinh (24h) |
+| | Nhập nhật ký hiện trường hàng ngày, tải ảnh thi công và cập nhật tiến độ hạng mục hàng tuần | Hàng ngày / Tuần |
+| | Nhập kế hoạch vốn, kế hoạch giải ngân 12 tháng và ghi nhận các đợt giải ngân thực tế | Khi phát sinh (24h) |
+| | Cập nhật hồ sơ thanh tra, kiểm tra và khắc phục lỗi của dự án | Khi phát sinh (24h) |
+| | Cập nhật số liệu quyết toán và hồ sơ quyết toán khi dự án hoàn thành | Khi phát sinh |
+| | Theo dõi và cập nhật trạng thái hoàn thành của các bước quy trình nghiệp vụ | Khi phát sinh |
+| | Cập nhật số liệu thống kê giải phóng mặt bằng tổng hợp của dự án | Khi phát sinh / Tháng |
+| | Tải lên tài liệu, hồ sơ pháp lý dự án và các tệp đính kèm liên quan (bao gồm cả tệp BIM nếu có) | Khi phát sinh (24h) |
+| | Thực hiện đồng bộ dữ liệu dự án lên CSDL quốc gia theo quy định | Định kỳ / Khi phát sinh |
 | | Nhập KH tháng cá nhân, cập nhật tiến độ tuần, kết quả tháng | Theo lịch |
-| **Chuyên viên QLDA** | Nhập hồ sơ pháp lý dự án (QĐ, BB, CV) khi có phát sinh, phối hợp đính kèm tài liệu | Khi phát sinh (24h) |
+| **Chuyên viên Ban QLDA** | Phối hợp cập nhật hồ sơ pháp lý dự án (QĐ, BB, CV) khi có phát sinh, phối hợp đính kèm tài liệu | Khi phát sinh (24h) |
 | | Nhập KH tháng, cập nhật tiến độ tuần, kết quả tháng | Theo lịch |
 
-### Hướng dẫn thao tác đặc thù
+### Hướng dẫn thao tác theo 11 Tab chi tiết dự án (Kỹ sư phụ trách chính thực hiện)
 
-**Cập nhật thông tin dự án (Kỹ sư phụ trách dự án):**
-1. Nhận thông tin bàn giao dự án đã được khởi tạo bởi chuyên viên Phòng KHDT.
-2. Vào **Dự án** → Chọn dự án → Cập nhật các trường thông tin pháp lý, nguồn vốn và cơ cấu chi tiết, ngày khởi công, ngày hoàn thành dự kiến.
-3. Tab **Nhân sự**: Gán Giám đốc QLDA phụ trách (chỉ định); chọn Kế toán viên theo dõi (Phòng HCTH); chọn bản thân làm Cán bộ phụ trách chính.
-4. Tab **Thành viên**: Thêm các thành viên tham gia dự án (Chuyên viên phối hợp). Lưu.
+#### 1. Tab Tổng quan (`info`):
+- **Khởi tạo dự án**: Vào phân hệ **Dự án** → Chọn **Thêm mới**. Điền các thông tin cơ bản dựa trên Quyết định chủ trương đầu tư do phòng KHDT cung cấp.
+- **Cập nhật thông tin chi tiết**: Vào dự án → Tab **Tổng quan** (`info`) để nhập quy mô đầu tư (gộp các thông tin kỹ thuật cũ thành đoạn mô tả quy mô tại trường Quy mô đầu tư và Mục tiêu đầu tư), thông tin pháp lý (số quyết định phê duyệt dự án/thiết kế bản vẽ thi công, ngày quyết định, cơ quan thẩm định...), và cơ cấu chi phí nguồn vốn chi tiết.
+- **Cấu hình Nhân sự dự án**: Tại Tab **Tổng quan**, thực hiện gán các vai trò: Giám đốc QLDA phụ trách (chỉ định), Kế toán theo dõi dự án (được phân công từ phòng HCTH), và chọn bản thân là Cán bộ phụ trách chính. Bổ sung các thành viên khác tham gia dự án ở mục Thành viên.
 
-**Tạo kế hoạch thực hiện dự án / Lập kế hoạch dự án (Kỹ sư phụ trách dự án trực tiếp lập, Giám đốc Ban QLDA phê duyệt):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **Kế hoạch**.
-2. Bấm **Tạo kế hoạch** để mở bảng cấu hình:
-   - **Chọn Quy trình mẫu:** Chọn quy trình tương ứng (ví dụ: Quy trình đầu tư công 1 bước, 2 bước hoặc 3 bước tùy thuộc vào quy mô thiết kế của dự án).
-   - **Chọn Chế độ lập lịch:** *Tự động (Auto)* hoặc *Thủ công (Manual)*.
-   - Bấm **Khởi tạo bản thảo** để sinh danh sách công việc WBS.
-3. **Điều chỉnh thời gian và thiết lập xâu chuỗi (Cascade):**
-   - Chỉnh sửa trực tiếp số ngày thực hiện, ngày bắt đầu hoặc hạn hoàn thành của từng bước trên bản nháp.
-   - Bật tính năng **Cascade (Tự động xâu chuỗi)** để khi thay đổi ngày của một bước, hệ thống tự động cập nhật các bước phụ thuộc phía sau.
-4. **Cấu hình ma trận trách nhiệm RACI:**
-   - Tại mỗi bước công việc, cấu hình phân công vai trò (R, A, C, I) cho các bên liên quan từ danh sách thành viên.
-5. **Lưu kế hoạch và trình duyệt:**
-   - Bấm **Lưu kế hoạch** (hoặc xác nhận ghi đè). Báo cáo Giám đốc Ban QLDA phụ trách để kiểm tra, rà soát số liệu trên hệ thống và phê duyệt bản kế hoạch giấy ngoài hệ thống.
+#### 2. Tab Kế hoạch (`plan`):
+- Bấm **Tạo kế hoạch** để mở bảng cấu hình Master Plan:
+  - Chọn **Quy trình mẫu**: Chọn quy trình nghiệp vụ tương thích (1 bước, 2 bước hoặc 3 bước tùy quy mô thiết kế đã duyệt).
+  - Chọn **Chế độ lập lịch**: Chọn tự động (Auto) hoặc thủ công (Manual).
+- **Lập tiến độ và xâu chuỗi (Cascade)**: Điều chỉnh thời gian thực hiện của từng công việc. Bật tính năng **Cascade** để tự động cập nhật ngày bắt đầu/hoàn thành của các bước phụ thuộc khi thay đổi tiến độ của một bước.
+- **Cấu hình RACI**: Phân công trách nhiệm chi tiết (R - thực hiện, A - chịu trách nhiệm chính, C - tham vấn, I - nhận thông tin) cho từng bước công việc dựa trên danh sách thành viên dự án.
+- Bấm **Lưu kế hoạch** (hoặc xác nhận ghi đè khi có điều chỉnh được duyệt).
 
-**Quản lý và nhập dữ liệu Gói thầu (Tab Gói thầu):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **Gói thầu**.
-2. **Thêm mới gói thầu:** Bấm nút **Thêm gói thầu** để mở bảng điều hướng 4 tab:
-   - **Tab Thông tin cơ bản:** Nhập Số hiệu gói thầu (VD: XL-01), Tên gói thầu, Giá gói thầu, Thời gian thực hiện, Nguồn vốn.
-   - **Tab Phân loại pháp lý:** Chọn Lĩnh vực (Xây lắp/Tư vấn/Phi tư vấn/Hàng hóa/Hỗn hợp), Hình thức lựa chọn nhà thầu, Phương thức lựa chọn, Đấu thầu qua mạng, Loại hợp đồng, Phạm vi đấu thầu.
-   - **Tab Mốc thời gian:** Nhập Mã TBMT, Ngày đăng tải, Thời điểm đóng/mở thầu (nếu đấu thầu qua mạng).
-   - **Tab Kết quả LCNT:** Chọn Nhà thầu trúng thầu, Giá trúng thầu, Ngày phê duyệt KQLCNT.
-   - Bấm **Tạo gói thầu** để lưu.
-3. **Chỉnh sửa / Cập nhật kết quả LCNT:**
-   - Khi có kết quả trúng thầu, cán bộ phụ trách vào lại tab **Gói thầu** → Chọn gói thầu cần cập nhật → Chọn **Chỉnh sửa**.
-   - Chuyển sang **Tab Kết quả LCNT** để chọn Nhà thầu trúng thầu, nhập Giá trúng thầu và Ngày phê duyệt kết quả.
-   - Chuyển Trạng thái gói thầu sang **Đang thực hiện** để hệ thống ghi nhận.
+#### 3. Tab Gói thầu (`packages`):
+- Bấm **Thêm gói thầu** để nhập thông tin lựa chọn nhà thầu qua 4 bước:
+  - **Thông tin cơ bản**: Nhập mã gói thầu, tên gói thầu, giá gói thầu, thời gian thực hiện, nguồn vốn.
+  - **Phân loại pháp lý**: Chọn lĩnh vực (Xây lắp, tư vấn...), hình thức lựa chọn nhà thầu, loại hợp đồng...
+  - **Mốc thời gian**: Nhập mã thông báo mời thầu (TBMT), ngày đăng tải, thời điểm đóng/mở thầu.
+  - **Kết quả LCNT**: Khi có quyết định phê duyệt kết quả, nhập nhà thầu trúng thầu, giá trúng thầu, ngày phê duyệt kết quả và chuyển trạng thái gói thầu sang "Đang thực hiện".
 
-**Quản lý Kế hoạch vốn và Giải ngân (Tab Vốn - Kỹ sư phụ trách dự án phối hợp Kế toán viên):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **Vốn**.
-2. **Nhập Kế hoạch giải ngân theo tháng (Phân mục Kế hoạch giải ngân):**
-   - Chọn năm kế hoạch, bấm **Lập kế hoạch giải ngân** để mở bảng 12 tháng.
-   - Kỹ sư phụ trách dự án nhập số tiền dự kiến giải ngân cho từng tháng (từ tháng 1 đến tháng 12) dựa trên tiến độ các hạng mục thực tế.
-   - Bấm **Lưu**. **Lưu ý:** Tổng kế hoạch giải ngân 12 tháng không được vượt quá giới hạn vốn năm đã được phân bổ.
-3. **Ghi nhận Giải ngân thực tế (Phân mục Lịch sử giải ngân - Kế toán viên thực hiện):**
-   - Bấm **Thêm đợt giải ngân** (hoặc import hàng loạt từ Excel).
-   - Chọn đúng *Tạm ứng*, *Thanh toán KLHT*, hoặc *Thu hồi tạm ứng*.
-   - Nhập Số tiền, Ngày giải ngân, Số chứng từ/quyết định thanh toán, Nhà thầu thụ hưởng.
-   - Bấm **Lưu** để hệ thống tính toán lũy kế và cập nhật.
+#### 4. Tab Thi công (`construction`):
+- **Lập nhật ký công trường hàng ngày**: Vào mục Nhật ký thi công → Bấm **Lập nhật ký mới**.
+  - Sử dụng tính năng **Sao chép dữ liệu ngày hôm trước** để điền nhanh lực lượng nhân công, thiết bị thi công, sau đó điều chỉnh số lượng thực tế.
+  - Nhập thông tin thời tiết, nhiệt độ, mô tả công việc thi công chi tiết và tải hình ảnh hiện trường thực tế. Bấm lưu (có thể bấm xuất Word nếu cần trình ký).
+- **Cập nhật tiến độ nhà thầu**: Nhập tỷ lệ phần trăm (%) hoàn thành của các hạng mục thi công lõi định kỳ hàng tuần.
 
-**Quản lý và nhập dữ liệu Nhật ký thi công (Tab Thi công - Kỹ sư phụ trách dự án):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **Thi công**.
-2. **Lập nhật ký hàng ngày (Phân mục Nhật ký thi công):**
-   - Bấm **Lập nhật ký mới** (hoặc chọn ngày trên lịch và bấm **Lập nhật ký ngay**).
-   - Chọn tính năng **Sao chép dữ liệu ngày hôm trước** để điền nhanh danh sách nhân công, máy móc của ngày gần nhất, sau đó điều chỉnh số lượng thực tế.
-   - Nhập thời tiết, nhiệt độ.
-   - Mục **Nhân lực** và **Thiết bị**: Thêm/sửa số lượng lao động của từng nhà thầu và các loại máy thi công tại công trường.
-   - Mục **Nội dung chi tiết**: Ghi ngắn gọn các công việc đã thực hiện.
-   - Mục **Ảnh công trường**: Tải lên hình ảnh thi công thực tế tại hiện trường.
-   - Bấm **Lưu nhật ký**. Cán bộ có thể xuất nhật ký ra tệp Word bằng cách bấm **Xuất Nhật ký (Word)**.
-3. **Cập nhật tiến độ hạng mục (Phân mục Tiến độ nhà thầu):**
-   - Nhập tỷ lệ (%) hoàn thành của các hạng mục thi công cốt lõi.
+#### 5. Tab Vốn & Giải ngân (`capital`):
+- **Nhập Kế hoạch vốn**: Vào phân mục Kế hoạch vốn → Bấm **Thêm kế hoạch vốn**. Nhập năm/giai đoạn, số quyết định giao vốn, ngày quyết định, nguồn vốn và số vốn được phân bổ do phòng KHDT cung cấp.
+- **Lập Kế hoạch giải ngân tháng**: Vào phân mục Kế hoạch giải ngân → Chọn năm kế hoạch → Bấm **Lập kế hoạch giải ngân** và nhập số tiền dự kiến giải ngân cho 12 tháng (Tổng số tiền 12 tháng không được vượt quá kế hoạch vốn năm đã giao).
+- **Ghi nhận Giải ngân thực tế**: Vào phân mục Lịch sử giải ngân → Bấm **Thêm đợt giải ngân**. Nhập số tiền, ngày giải ngân, số chứng từ giải ngân, nhà thầu thụ hưởng và chọn đúng phân loại nghiệp vụ (*Tạm ứng*, *Thanh toán KLHT* hoặc *Thu hồi tạm ứng*) dựa trên chứng từ do bộ phận Kế toán cung cấp.
 
-**Quản lý Giải phóng mặt bằng (Tab GPMB - Kỹ sư phụ trách dự án):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **GPMB**.
-2. **Khởi tạo quy trình:** Nếu dự án chưa có dữ liệu GPMB, bấm **Khởi tạo Quy trình GPMB** để hệ thống tự động sinh 16 bước thủ tục tiêu chuẩn.
-3. **Cập nhật số liệu tổng hợp:** Bấm **Cập nhật số liệu**, điền: Tổng diện tích thu hồi đất (ha), Diện tích đã bàn giao (ha), Tổng số hộ ảnh hưởng, Số hộ đã tái định cư, Tổng kinh phí bồi thường và số tiền bồi thường đã giải ngân thực tế. Bấm **Lưu số liệu**.
-4. **Cập nhật 16 bước thủ tục:** Tại dòng bước thủ tục tương ứng, bấm biểu tượng chiếc bút **Cập nhật**, chọn trạng thái, điền Ngày hoàn thành thực tế và Ghi chú chi tiết khó khăn/vướng mắc. Bấm **Lưu**.
+#### 6. Tab Thanh tra (`inspection`):
+- Khi có các đoàn thanh tra, kiểm tra tại công trình, bấm **Thêm đợt kiểm tra**.
+- Nhập các thông tin: Ngày kiểm tra, Cơ quan/Đoàn kiểm tra, Nội dung, Kết luận/Kiến nghị chính, Trạng thái khắc phục lỗi và tải lên tệp biên bản/kết luận thanh tra dạng PDF.
 
-**Quản lý Mô hình BIM (Tab BIM - Kỹ sư phụ trách dự án):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **BIM**.
-2. Bấm **Tải lên mô hình BIM**, chọn tệp IFC từ máy tính, điền thông tin phiên bản và mô tả.
+#### 7. Tab Quyết toán (`settlement`):
+- Khi dự án hoàn thành đưa vào sử dụng, phối hợp với Kế toán viên cập nhật hồ sơ quyết toán:
+- Nhập Giá trị đề nghị quyết toán (VNĐ), Giá trị được phê duyệt quyết toán (VNĐ), Số quyết định và Ngày quyết định phê duyệt quyết toán, đính kèm văn bản phê duyệt quyết toán. Hệ thống sẽ tự động tính toán chênh lệch và dư nợ công nợ.
 
-**Quản lý Tài liệu dự án (Tab Tài liệu - Kỹ sư phụ trách dự án hoặc Chuyên viên):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **Tài liệu**.
-2. Bấm **Tải lên tài liệu**, chọn tệp tin đính kèm, điền thông tin tóm tắt và đặt tên tệp đúng quy ước tại Phụ lục A.
+#### 8. Tab Quy trình (`workflow`):
+- Theo dõi tiến trình của dự án qua các giai đoạn quy trình nghiệp vụ được cấu hình trên hệ thống.
+- Thực hiện cập nhật trạng thái hoàn thành của các bước quy trình được giao phụ trách để hệ thống ghi nhận tiến độ tổng thể.
 
-**Ghi nhận Thanh tra / Kiểm tra (Tab Kiểm tra - Kỹ sư phụ trách dự án):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **Kiểm tra**.
-2. Bấm **Thêm đợt kiểm tra**, điền: Ngày kiểm tra, Cơ quan/Đoàn kiểm tra, Nội dung kiểm tra, Kết luận/Kiến nghị chính, Trạng thái khắc phục sai lỗi, và đính kèm biên bản/kết luận (dạng PDF). Bấm **Lưu**.
+#### 9. Tab GPMB (`clearance`):
+- Vào Tab GPMB → Bấm **Khởi tạo Thông tin GPMB** (nếu là dự án mới chưa có bản ghi).
+- Bấm **Cập nhật số liệu** để điền các thông tin thống kê tổng quan: Tổng diện tích đất thu hồi (ha), Diện tích đất đã bàn giao (ha), Tổng số hộ bị ảnh hưởng, Số hộ đã tái định cư, Tổng kinh phí bồi thường được duyệt, và Số tiền bồi thường đã giải ngân thực tế. Bấm **Lưu số liệu**.
 
-**Ghi nhận Quyết toán dự án (Tab Quyết toán - Kỹ sư phụ trách dự án phối hợp Kế toán viên):**
-1. Vào phân hệ **Dự án** → Chọn dự án cụ thể → Chuyển sang tab **Quyết toán**.
-2. Kỹ sư phối hợp với Kế toán viên cập nhật hồ sơ quyết toán: điền Giá trị đề nghị quyết toán (VNĐ), Giá trị được phê duyệt quyết toán (VNĐ), Số quyết định phê duyệt quyết toán, Ngày quyết định phê duyệt.
-3. Hệ thống tự động tính chênh lệch quyết toán và số dư công nợ còn phải thu hồi/thanh toán.
+#### 10. Tab Hồ sơ (`documents`):
+- Bấm **Tải lên tài liệu** để lưu trữ hồ sơ pháp lý của dự án.
+- Chọn tệp đính kèm (PDF, DOCX, hoặc tệp mô hình BIM IFC nếu có), phân loại loại tài liệu, điền tóm tắt nội dung và đặt tên tệp tuân thủ đúng quy tắc đặt tên tại Phụ lục A.
+
+#### 11. Tab Đồng bộ CSDL (`tt24`):
+- Thực hiện đồng bộ số liệu dự án lên Cơ sở dữ liệu quốc gia theo quy định của Thông tư 24.
+- Kiểm tra trạng thái đồng bộ, các trường dữ liệu bắt buộc bị thiếu theo cảnh báo của hệ thống, bổ sung dữ liệu bị thiếu và bấm **Thực hiện đồng bộ** để hoàn tất.
+
 
 
 ## VI. BAN QUẢN LÝ DỰ ÁN 2 (QLDA2)
@@ -741,9 +741,9 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 
 | Vai trò | Nhiệm vụ | Tần suất |
 |----------------|----------|----------|
-| **Giám đốc / Phó Giám đốc Ban QLDA 2** | Rà soát KH tháng của phòng và kế hoạch thực hiện dự án (Master Plan / WBS / RACI) trên hệ thống (Không trực tiếp nhập liệu, phê duyệt ngoài hệ thống) | Tháng / Khi phát sinh |
-| **Kỹ sư Ban QLDA 2 (Kỹ sư phụ trách dự án)** | Cập nhật thông tin dự án, kế hoạch thực hiện (Master Plan), gói thầu, vốn, thi công, GPMB, BIM, tài liệu, kiểm tra, quyết toán | Theo lịch / Khi phát sinh |
-| **Chuyên viên Ban QLDA 2** | Nhập hồ sơ pháp lý, đính kèm tài liệu; KH tháng; kết quả tháng | Theo lịch / Khi phát sinh |
+| **Giám đốc / Phó Giám đốc Ban QLDA 2** | Rà soát kế hoạch tháng của phòng; rà soát kế hoạch thực hiện dự án (Master Plan / WBS / RACI) trên hệ thống (Không trực tiếp nhập liệu, phê duyệt ngoài hệ thống) | Tháng / Khi phát sinh |
+| **Kỹ sư Ban QLDA 2 (Kỹ sư phụ trách dự án)** | Chịu trách nhiệm nhập liệu, cập nhật và đính kèm hồ sơ cho toàn bộ 11 Tab của dự án được giao phụ trách | Theo lịch / Khi phát sinh |
+| **Chuyên viên Ban QLDA 2** | Phối hợp cập nhật hồ sơ pháp lý dự án khi có phát sinh, phối hợp đính kèm tài liệu; KH tháng; kết quả tháng | Theo lịch / Khi phát sinh |
 
 > Hướng dẫn thao tác: áp dụng như Ban QLDA1 (mục V), khác phạm vi dự án phân công cho QLDA2.
 
@@ -754,10 +754,10 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 
 | Vai trò | Nhiệm vụ | Tần suất |
 |----------------|----------|----------|
-| **Giám đốc / Phó Giám đốc Ban QLDA 3** | Rà soát KH tháng của phòng và kế hoạch thực hiện dự án (Master Plan / WBS / RACI) trên hệ thống (Không trực tiếp nhập liệu, phê duyệt ngoài hệ thống) | Tháng / Khi phát sinh |
-| **Kỹ sư Ban QLDA 3 (Kỹ sư phụ trách dự án)** | Cập nhật thông tin dự án, kế hoạch thực hiện (Master Plan), gói thầu, vốn, thi công, GPMB, BIM, tài liệu, kiểm tra, quyết toán | Theo lịch / Khi phát sinh |
+| **Giám đốc / Phó Giám đốc Ban QLDA 3** | Rà soát kế hoạch tháng của phòng; rà soát kế hoạch thực hiện dự án (Master Plan / WBS / RACI) trên hệ thống (Không trực tiếp nhập liệu, phê duyệt ngoài hệ thống) | Tháng / Khi phát sinh |
+| **Kỹ sư Ban QLDA 3 (Kỹ sư phụ trách dự án)** | Chịu trách nhiệm nhập liệu, cập nhật và đính kèm hồ sơ cho toàn bộ 11 Tab của dự án được giao phụ trách | Theo lịch / Khi phát sinh |
 
-> **Lưu ý:** Ban QLDA 3 chỉ phân bổ 3 vai trò, mỗi người kiêm nhiều việc hơn. Giám đốc Ban thực hiện vai trò rà soát, phê duyệt. Kỹ sư phụ trách dự án thực hiện toàn bộ thao tác nhập liệu.
+> **Lưu ý:** Ban QLDA 3 chỉ phân bổ 3 vai trò, mỗi người kiêm nhiều việc hơn. Giám đốc Ban thực hiện vai trò rà soát, phê duyệt. Kỹ sư phụ trách dự án thực hiện toàn bộ thao tác nhập liệu đối với dự án được giao.
 
 
 ## VIII. PHÒNG PHÁT TRIỂN DỊCH VỤ (PTDV) VÀ BAN QLDA 4, 5 (MỞ RỘNG)
@@ -767,10 +767,10 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 - Áp dụng quy tắc nhập nhiệm vụ và KH tháng như các phòng khác.
 
 ### Ban QLDA 4 (Công nghệ & Chuyển đổi số) — dự phòng mở rộng
-- Áp dụng phân vai trách nhiệm tương tự Ban QLDA 1 (mục V): Giám đốc Ban QLDA (rà soát/phê duyệt), Chuyên viên/Kỹ sư (nhập liệu, cập nhật dự án, lập Master Plan...).
+- Áp dụng phân vai trách nhiệm tương tự Ban QLDA 1 (mục V): Giám đốc Ban QLDA (rà soát/phê duyệt), Chuyên viên/Kỹ sư (chịu trách nhiệm nhập liệu và cập nhật 11 Tab của dự án được giao).
 
 ### Ban QLDA 5 (Môi trường & Thủy lợi) — dự phòng mở rộng
-- Áp dụng phân vai trách nhiệm tương tự Ban QLDA 1 (mục V): Giám đốc Ban QLDA (rà soát/phê duyệt), Chuyên viên/Kỹ sư (nhập liệu, cập nhật dự án, lập Master Plan...).
+- Áp dụng phân vai trách nhiệm tương tự Ban QLDA 1 (mục V): Giám đốc Ban QLDA (rà soát/phê duyệt), Chuyên viên/Kỹ sư (chịu trách nhiệm nhập liệu và cập nhật 11 Tab của dự án được giao).
 
 > *(Lưu ý: Quy chế làm việc hiện tại chỉ quy định 3 phòng QLDA; các Ban QLDA 4 và 5 là cấu hình dự phòng để mở rộng tổ chức khi cần thiết).*
 
@@ -779,23 +779,23 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 
 > Cột "Người rà soát" là người kiểm tra chất lượng dữ liệu và phê duyệt nội dung (không phải phê duyệt điện tử trên phần mềm). Ban Giám đốc và các lãnh đạo phòng/Ban chỉ thực hiện rà soát/phê duyệt số liệu, không trực tiếp nhập liệu.
 
-## Bảng 1. Phân công nhập liệu DỰ ÁN
+## Bảng 1. Phân công nhập liệu dự án theo 11 Tab
 
-| Nội dung nhập liệu | Người nhập | Người rà soát / Phê duyệt | Ghi chú |
-|---------------------|-----------|---------------|---------|
-| Tạo dự án mới (thông tin cơ bản) | Chuyên viên Phòng KHDT phụ trách | Trưởng phòng KHDT | Tạo mới khi có quyết định chủ trương đầu tư |
-| Cập nhật thông tin dự án (sau khi khởi tạo) | Kỹ sư phụ trách dự án (Ban QLDA) | Giám đốc Ban QLDA phụ trách | Cập nhật liên tục cho đến khi dự án kết thúc |
-| Thông tin pháp lý (QĐ, phê duyệt) | Kỹ sư phụ trách dự án / Chuyên viên | Giám đốc Ban QLDA phụ trách | Quyết định chủ trương, phê duyệt dự án, TK-DT |
-| Thông tin tài chính (tổng mức ĐT, cơ cấu chi phí, nguồn vốn) | Kỹ sư phụ trách dự án (Ban QLDA) | Kế toán trưởng | Phối hợp với chuyên viên Phòng KHDT |
-| Thông tin nhân sự dự án (Kế toán, GĐ QLDA, Cán bộ phụ trách chính) | Kỹ sư phụ trách dự án (Ban QLDA) | Giám đốc Ban QLDA phụ trách | Chỉ định nhân sự tham gia dự án |
-| Kế toán theo dõi | Kế toán viên phụ trách (Phòng HCTH) | Kế toán trưởng | Chọn kế toán viên theo dõi chi tiết |
-| Khối lượng, đợt giải ngân hàng tháng | Kỹ sư phụ trách dự án (Ban QLDA) | Giám đốc Ban QLDA phụ trách | Lũy kế khối lượng thực hiện định kỳ |
-| Thông tin thiết kế, thẩm định | Kỹ sư Phòng KTTD phụ trách | Trưởng phòng KTTD | Kết quả thẩm tra thiết kế, quy mô xây dựng |
-| Thông tin nhà thầu thi công | ⚙️ Tự động cập nhật từ phân hệ Đấu thầu | — | Lấy từ kết quả lựa chọn nhà thầu gói thầu |
-| Số liệu thanh toán, giải ngân thực tế | Kế toán viên phụ trách (Phòng HCTH) | Kế toán trưởng / Phó phòng phụ trách | Nhập từ chứng từ chuyển tiền Kho bạc thực tế |
-| Kế hoạch vốn, QĐ giao KHV | Chuyên viên Phòng KHDT phụ trách | Trưởng phòng KHDT | Nhập kế hoạch vốn năm, trung hạn |
+| Tab chức năng | Nội dung nhập liệu | Vai trò chính (Người nhập) | Vai trò phối hợp (Người cung cấp thông tin) | Người rà soát / Giám sát |
+|---|---|---|---|---|
+| **Tab 1: Tổng quan (`info`)** | Khởi tạo dự án; Nhập thông tin pháp lý, cơ cấu nguồn vốn, quy mô/mục tiêu đầu tư; Gán nhân sự dự án (Kế toán theo dõi, Cán bộ phụ trách chính, GĐ QLDA) | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Phòng KHDT**: Cung cấp quyết định chủ trương đầu tư.<br>- **Phòng KTTD**: Cung cấp hồ sơ quy mô thiết kế.<br>- **Phòng HCTH**: Cung cấp danh sách gán kế toán viên. | Giám đốc Ban QLDA phụ trách |
+| **Tab 2: Kế hoạch (`plan`)** | Chọn quy trình mẫu; Thiết lập Master Plan; Điều chỉnh tiến độ và Cascade; Cấu hình ma trận trách nhiệm RACI | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Các phòng ban & Nhà thầu**: Góp ý kế hoạch phối hợp thực tế. | Giám đốc Ban QLDA phụ trách |
+| **Tab 3: Gói thầu (`packages`)** | Nhập kế hoạch lựa chọn nhà thầu, thông tin gói thầu; Cập nhật kết quả trúng thầu và hợp đồng | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Phòng KHDT (mảng đấu thầu)**: Cung cấp quyết định phê duyệt kế hoạch thầu và quyết định phê duyệt kết quả lựa chọn nhà thầu. | Giám đốc Ban QLDA phụ trách |
+| **Tab 4: Thi công (`construction`)** | Lập nhật ký thi công hàng ngày (nhân lực, thiết bị, hình ảnh); Cập nhật tỷ lệ % hoàn thành hạng mục thi công | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Các Nhà thầu thi công**: Báo cáo số liệu nhân lực, thiết bị và công việc hàng ngày tại hiện trường. | Giám đốc Ban QLDA phụ trách |
+| **Tab 5: Vốn & Giải ngân (`capital`)** | Nhập kế hoạch vốn năm/trung hạn; Nhập kế hoạch giải ngân 12 tháng; Ghi nhận đợt giải ngân thực tế (Tạm ứng/Thanh toán/Thu hồi) | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Phòng KHDT**: Cung cấp quyết định giao vốn năm/trung hạn.<br>- **Phòng HCTH (Bộ phận Kế toán)**: Cung cấp chứng từ thanh toán/giải ngân thực tế. | Giám đốc Ban QLDA phụ trách / Kế toán trưởng |
+| **Tab 6: Thanh tra (`inspection`)** | Nhập thông tin các đợt thanh tra/kiểm tra; Cập nhật kết luận và trạng thái khắc phục sai sót | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Đoàn kiểm tra / Các đơn vị**: Cung cấp biên bản/kết luận thanh kiểm tra. | Giám đốc Ban QLDA phụ trách |
+| **Tab 7: Quyết toán (`settlement`)** | Nhập số liệu đề nghị quyết toán, quyết toán được phê duyệt; Tải lên quyết định phê duyệt quyết toán | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Phòng HCTH (Bộ phận Kế toán)**: Cung cấp quyết định phê duyệt quyết toán dự án hoàn thành. | Giám đốc Ban QLDA phụ trách / Kế toán trưởng |
+| **Tab 8: Quy trình (`workflow`)** | Theo dõi tiến trình; Cập nhật trạng thái hoàn thành các bước công việc được giao phụ trách | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Các phòng chuyên môn**: Cập nhật trạng thái phối hợp liên quan. | Giám đốc Ban QLDA phụ trách |
+| **Tab 9: GPMB (`clearance`)** | Cập nhật số liệu thống kê giải phóng mặt bằng tổng quan (Diện tích, số hộ ảnh hưởng/tái định cư, kinh phí...) | **Kỹ sư phụ trách dự án** (Ban QLDA) | - **Hội đồng/Ban GPMB địa phương / Kỹ sư mảng GPMB**: Cung cấp báo cáo số liệu GPMB định kỳ. | Giám đốc Ban QLDA phụ trách |
+| **Tab 10: Hồ sơ (`documents`)** | Tải lên các file tài liệu pháp lý dự án theo đúng quy tắc đặt tên file (Phụ lục A) | **Kỹ sư phụ trách dự án** (Ban QLDA) hoặc **Chuyên viên Ban QLDA** | - **Các phòng ban**: Cung cấp các file tài liệu số hóa tương ứng. | Giám đốc Ban QLDA phụ trách |
+| **Tab 11: Đồng bộ CSDL (`tt24`)** | Rà soát lỗi dữ liệu bắt buộc theo Thông tư 24; Thực hiện bấm đồng bộ lên hệ thống CSDL quốc gia | **Kỹ sư phụ trách dự án** (Ban QLDA) hoặc **Cán bộ quản trị** | — | Giám đốc Ban QLDA phụ trách |
 
-> ⚙️ **Không phân công nhập:** Nhóm dự án, Tiến độ chung, Tổng KHV, Tổng giải ngân, Tổng cơ cấu chi phí — hệ thống tự tính.
+> ⚙️ **Lưu ý:** Các chỉ số tổng hợp như: Nhóm dự án, Tiến độ chung, Tổng kế hoạch vốn được giao, Tổng giải ngân lũy kế, Cơ cấu chi phí hiện tại... sẽ được hệ thống tự động tính toán dựa trên các bản ghi chi tiết, không phân công nhập liệu thủ công.
 
 ## Bảng 2. Phân công nhập liệu NHIỆM VỤ
 
@@ -851,7 +851,8 @@ Hệ thống hiện chỉ có 4 quyền thao tác dữ liệu: **Xem / Tạo / S
 
 | Thời điểm | Hành động | Phụ trách |
 |-----------|-----------|-----------|
-| Hàng ngày | Nhập nhiệm vụ phát sinh (trong 24h) | Chuyên viên, kỹ sư, kế toán viên |
+| Trong vòng 24h kể từ khi phát sinh | Cung cấp thông tin, hồ sơ, chứng từ (vốn, gói thầu, thiết kế, giải ngân...) cho Kỹ sư phụ trách dự án | Chuyên viên các phòng KHDT, KTTD, HCTH (Kế toán) |
+| Hàng ngày (trong 24h) | Nhập nhiệm vụ phát sinh cá nhân | Chuyên viên, kỹ sư, kế toán viên |
 | Thứ Sáu hàng tuần (17:00) | Cập nhật tiến độ nhiệm vụ tuần | Cán bộ có nhiệm vụ > 1 tuần |
 | Ngày 25 hàng tháng | Nhập KH tháng tiếp theo (cá nhân) | Chuyên viên, kỹ sư, kế toán viên |
 | Ngày 28 hàng tháng | Rà soát, phê duyệt KH tháng của phòng | Trưởng các phòng ban |

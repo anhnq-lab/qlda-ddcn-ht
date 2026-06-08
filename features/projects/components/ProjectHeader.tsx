@@ -44,7 +44,7 @@ export const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onSync, i
     const statusConfig = currentStatus ? { label: currentStatus.label, bg: `${currentStatus.bgClass} ${currentStatus.textClass} border ${currentStatus.borderClass}` } : getStatusConfig(project.Status);
 
     // Progress bar mini
-    const progress = project.Progress || 0;
+    const progress = project.ComputedStats?.PhysicalProgress || 0; // TODO: [refactor] Integrate physical_progress from RPC
 
     // ── Compact mode: single-line header for BIM tab ──
     if (compact) {

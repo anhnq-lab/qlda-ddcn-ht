@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Hammer, Calendar, Users, Wrench, Camera, Plus, CloudSun, 
   ChevronRight, AlertTriangle, CheckCircle2, Info, ArrowRight,
@@ -220,6 +220,37 @@ export const ProjectConstructionTab: React.FC<Props> = ({ projectID, project }) 
     }
   }, [combinedLog, selectedDate]);
 
+  // Auto-save draft to localStorage khi đang chỉnh sửa nhật ký
+  useEffect(() => {
+    if (!isEditingLog) return;
+    const key = `draft-log-${projectID}-${selectedDate}`;
+    const timer = setTimeout(() => {
+      try { localStorage.setItem(key, JSON.stringify(logForm)); } catch {}
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [logForm, isEditingLog, projectID, selectedDate]);
+
+  // Load draft khi bắt đầu chỉnh sửa (nếu chưa có dữ liệu từ server)
+  useEffect(() => {
+    if (!isEditingLog || combinedLog) return;
+    const key = `draft-log-${projectID}-${selectedDate}`;
+    try {
+      const draft = localStorage.getItem(key);
+      if (draft) {
+        const parsed = JSON.parse(draft);
+        if (parsed?.log?.log_date === selectedDate) {
+          setLogForm(parsed);
+          addToast({ title: 'Khôi phục bản nháp', message: 'Đã tải lại nhật ký đang soạn dở từ lần trước.', type: 'info' });
+        }
+      }
+    } catch {}
+  }, [isEditingLog, selectedDate, projectID]);
+
+  // Xóa draft sau khi lưu thành công
+  const clearDraft = useCallback(() => {
+    try { localStorage.removeItem(`draft-log-${projectID}-${selectedDate}`); } catch {}
+  }, [projectID, selectedDate]);
+
   // Fetch 7-Day weather forecast based on coordinates
   useEffect(() => {
     const fetchForecast = async () => {
@@ -418,6 +449,7 @@ export const ProjectConstructionTab: React.FC<Props> = ({ projectID, project }) 
   // Daily Log Handlers
   const handleSaveLog = async () => {
     await saveLogMutation.mutateAsync(logForm);
+    clearDraft();
     setIsEditingLog(false);
   };
 

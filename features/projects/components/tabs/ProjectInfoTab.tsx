@@ -21,6 +21,7 @@ import { TemplateExportModal } from '../TemplateExportModal';
 import { LegalReferenceLink } from '../../../../components/common/LegalReferenceLink';
 import { useSlidePanel } from '@/context/SlidePanelContext';
 import { useProjectCapitalSummary } from '@/hooks/useCapital';
+import { useProjectComputedStats } from '@/hooks/useProjectComputedStats';
 
 // Extended contractor with package info for display
 interface ContractorWithPackages extends Contractor {
@@ -224,42 +225,39 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
         });
     }, [openPanel, projectContractors, project.ProjectID]);
 
+    // ═══ Server-side computed stats (RPC — single call thay vì 3 queries) ═══
+    const { data: computedStats } = useProjectComputedStats(project.ProjectID);
+
     // ═══ Calculate progress from TASKS plan data ═══
     const { data: taskProgressData } = useQuery<{ projectProgress: number; constructionProgress: number }>({
         queryKey: ['project-task-progress-v2', project.ProjectID],
         queryFn: async () => {
             const { TaskService } = await import('../../../../services/TaskService');
-            // Using the new workflow engine to get tasks linked to this project's instances
             const wfTasks = await TaskService.getProjectTasks(project.ProjectID);
 
             if (!wfTasks || wfTasks.length === 0) {
-                // No tasks → dùng progress dự án, thi công = 0 (chưa có tasks thi công)
                 return {
-                    projectProgress: project.PhysicalProgress ?? project.Progress ?? 0,
-                    constructionProgress: 0,
+                    projectProgress: computedStats?.PhysicalProgress ?? project.PhysicalProgress ?? 0,
+                    constructionProgress: computedStats?.PhysicalProgress ?? 0,
                 };
             }
 
-            // All tasks → Tiến độ dự án (overall plan progress)
             const allProgress = wfTasks.map(t => t.progress ?? (t.status === 'done' ? 100 : 0));
             const projectProg = allProgress.length > 0
                 ? Math.round(allProgress.reduce((a, b) => a + b, 0) / allProgress.length)
                 : 0;
 
-            // Simplified: constructionProgress falls back to projectProg 
-            const constructionProg = projectProg;
-
-            return { projectProgress: projectProg, constructionProgress: constructionProg };
+            return { projectProgress: projectProg, constructionProgress: projectProg };
         },
         enabled: !!project.ProjectID,
         staleTime: 5 * 60 * 1000,
     });
-    const physicalProgress = taskProgressData?.projectProgress ?? project.PhysicalProgress ?? project.Progress ?? 0;
-    const financialProgress = taskProgressData?.constructionProgress ?? 0;
+    const physicalProgress = taskProgressData?.projectProgress ?? computedStats?.PhysicalProgress ?? project.PhysicalProgress ?? 0;
+    const financialProgress = taskProgressData?.constructionProgress ?? computedStats?.PhysicalProgress ?? 0;
 
-    // ═══ Calculate disbursed amount from real disbursement data ═══
+    // ═══ Capital summary (chi tiết giải ngân theo tháng, lũy kế nghiệm thu) ═══
     const { data: capitalSummary } = useProjectCapitalSummary(project.ProjectID);
-    const disbursedAmount = capitalSummary?.summary.totalDisbursed || 0;
+    const disbursedAmount = computedStats?.TotalDisbursed ?? capitalSummary?.summary.totalDisbursed ?? 0;
 
     const isHandoverProject = useMemo(() => {
         return !!(
@@ -269,13 +267,7 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
             project.ProjectManagement?.ban_tiep_nhan ||
             project.ProjectManagement?.thoi_diem_ban_giao ||
             project.ProjectManagement?.ho_so_ban_giao ||
-            (project.ProjectManagement?.gia_tri_khoi_luong_ban_giao !== undefined && project.ProjectManagement?.gia_tri_khoi_luong_ban_giao > 0) ||
-            project.ProjectStatusInfo?.ton_tai_vuong_mac_ban_giao ||
-            project.ProjectStatusInfo?.tinh_trang_quyet_toan_den_30_6_2025 ||
-            project.ProjectStatusInfo?.cong_no_den_30_6_2025 ||
-            project.ProjectStatusInfo?.tinh_trang_quyet_toan_sau_ban_giao ||
-            project.ProjectStatusInfo?.cong_no_sau_ban_giao ||
-            project.ProjectStatusInfo?.cham_tien_do
+            (project.ProjectManagement?.gia_tri_khoi_luong_ban_giao !== undefined && project.ProjectManagement?.gia_tri_khoi_luong_ban_giao > 0)
         );
     }, [project]);
 
@@ -530,7 +522,6 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                                     } 
                                     highlight={!!project.SpecialtyType}
                                 />
-                                <EnhancedInfoItem icon={Info} label="Chi tiết chuyên ngành" value={project.SpecialtyDetails || '—'} />
                                 <EnhancedInfoItem icon={MapPin} label="Địa điểm" value={project.LocationCode} />
                                 <EnhancedInfoItem icon={Clock} label="Thời gian thực hiện" value={project.Duration || '—'} />
                                 <EnhancedInfoItem icon={Briefcase} label="Hình thức quản lý" value={project.ManagementForm || 'Chủ đầu tư trực tiếp quản lý'} />
@@ -565,230 +556,6 @@ export const ProjectInfoTab: React.FC<ProjectInfoTabProps> = ({
                         </div>
                     </div>
 
-                    {/* ═══ QUY MÔ CÔNG TRÌNH (separate section) ═══ */}
-                    {(project.TotalEstimate || project.SiteArea || project.ConstructionArea || project.FloorArea || project.BuildingHeight || project.AboveGroundFloors || project.BasementFloors) ? (
-                        <div className="section-card">
-                            <div className="section-card-header">
-                                <div className="flex items-center gap-2">
-                                    <div className="section-icon"><Maximize className="w-3.5 h-3.5" /></div>
-                                    <span>Quy mô công trình</span>
-                                </div>
-                            </div>
-                            <div className="p-2.5 space-y-2">
-                                {/* Stat cards row */}
-                                <div className="grid grid-cols-3 gap-2">
-                                    {[
-                                        { label: 'Tổng dự toán', value: project.TotalEstimate, color: 'red' },
-                                        { label: 'Diện tích (m²)', value: project.SiteArea, color: 'blue' },
-                                        { label: 'DT xây dựng (m²)', value: project.ConstructionArea, color: 'emerald' },
-                                    ].map((item, i) => (
-                                        <div key={i} className={`rounded-xl border py-1.5 px-2 text-center
-                                            ${item.color === 'red' ? 'border-red-500/20 bg-red-500/10' :
-                                            item.color === 'blue' ? 'border-blue-500/20 bg-blue-500/10' :
-                                            'border-emerald-500/20 bg-emerald-500/10'}`}
-                                        >
-                                            <p className="text-[9px] font-bold text-txt-muted uppercase tracking-wide">{item.label}</p>
-                                            <p className={`text-sm font-black tabular-nums
-                                                ${item.color === 'red' ? 'text-rose-500' :
-                                                item.color === 'blue' ? 'text-blue-500' :
-                                                'text-emerald-500'}`}
-                                            >
-                                                {item.value ? Number(item.value).toLocaleString('vi-VN') : '—'}
-                                            </p>
-                                        </div>
-                                    ))}
-                                </div>
-                                {/* Detail items */}
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-0">
-                                    {project.FloorArea ? <EnhancedInfoItem icon={Ruler} label="DT sàn sử dụng" value={`${Number(project.FloorArea).toLocaleString('vi-VN')} m²`} /> : null}
-                                    {project.BuildingHeight ? <EnhancedInfoItem icon={Ruler} label="Chiều cao" value={`${project.BuildingHeight} m`} /> : null}
-                                    {project.BuildingDensity ? <EnhancedInfoItem icon={Building2} label="Mật độ XD" value={`${project.BuildingDensity}%`} /> : null}
-                                    {project.LandUseCoefficient ? <EnhancedInfoItem icon={Building2} label="Hệ số SDĐ" value={`${project.LandUseCoefficient}`} /> : null}
-                                    {project.AboveGroundFloors ? <EnhancedInfoItem icon={Building2} label="Tầng nổi" value={`${project.AboveGroundFloors}`} /> : null}
-                                    {project.BasementFloors ? <EnhancedInfoItem icon={Building2} label="Tầng hầm" value={`${project.BasementFloors}`} /> : null}
-                                </div>
-                            </div>
-                        </div>
-                    ) : null}
-
-                    {/* ═══ THÔNG TIN BÀN GIAO & TIẾP NHẬN ═══ */}
-                    {isHandoverProject && (
-                        <div className="section-card">
-                            <div className="section-card-header">
-                                <div className="flex items-center gap-2">
-                                    <div className="section-icon">
-                                        <ArrowRightLeft className="w-3.5 h-3.5" />
-                                    </div>
-                                    <span>Thông tin bàn giao & Tiếp nhận</span>
-                                </div>
-                            </div>
-                            <div className="p-2.5 space-y-3">
-                                {/* Grid thông tin chung bàn bàn giao */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border-b border-border-subtle pb-2">
-                                    {project.OldInvestor && (
-                                        <EnhancedInfoItem
-                                            icon={Building2}
-                                            label="Chủ đầu tư cũ (Bàn giao)"
-                                            value={project.OldInvestor}
-                                        />
-                                    )}
-                                    {project.DecisionLevelBeforeHandover && (
-                                        <EnhancedInfoItem
-                                            icon={Briefcase}
-                                            label="Cấp quyết định trước bàn giao"
-                                            value={project.DecisionLevelBeforeHandover}
-                                        />
-                                    )}
-                                    {project.TransferDecision && (
-                                        <EnhancedInfoItem
-                                            icon={FileText}
-                                            label="Quyết định bàn giao"
-                                            value={project.TransferDecision}
-                                        />
-                                    )}
-                                    {(project.ProjectManagement?.thoi_diem_ban_giao || project.HandoverDate) && (
-                                        <EnhancedInfoItem
-                                            icon={Calendar}
-                                            label="Ngày bàn giao"
-                                            value={formatDate(project.ProjectManagement?.thoi_diem_ban_giao || project.HandoverDate)}
-                                        />
-                                    )}
-                                    {project.ProjectManagement?.ban_tiep_nhan && (
-                                        <EnhancedInfoItem
-                                            icon={UserCheck}
-                                            label="Đơn vị tiếp nhận"
-                                            value={project.ProjectManagement?.ban_tiep_nhan}
-                                        />
-                                    )}
-                                    {project.ProjectManagement?.ho_so_ban_giao && (
-                                        <EnhancedInfoItem
-                                            icon={FileText}
-                                            label="Hồ sơ bàn giao"
-                                            value={project.ProjectManagement?.ho_so_ban_giao}
-                                        />
-                                    )}
-                                    {project.ProjectManagement?.gia_tri_khoi_luong_ban_giao !== undefined && project.ProjectManagement?.gia_tri_khoi_luong_ban_giao > 0 && (
-                                        <EnhancedInfoItem
-                                            icon={Coins}
-                                            label="Giá trị khối lượng bàn giao"
-                                            value={formatVND(project.ProjectManagement?.gia_tri_khoi_luong_ban_giao)}
-                                            highlight
-                                        />
-                                    )}
-                                </div>
-
-                                {/* Quyết toán & Công nợ */}
-                                {(project.ProjectStatusInfo?.tinh_trang_quyet_toan_den_30_6_2025 || 
-                                  project.ProjectStatusInfo?.cong_no_den_30_6_2025 || 
-                                  project.ProjectStatusInfo?.tinh_trang_quyet_toan_sau_ban_giao || 
-                                  project.ProjectStatusInfo?.cong_no_sau_ban_giao) && (
-                                    <div className="space-y-2">
-                                        <h4 className="text-[10px] font-bold text-txt-muted uppercase tracking-wider px-2.5">
-                                            Tình trạng quyết toán & Công nợ
-                                        </h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 px-2.5">
-                                            {/* Mốc 30/6/2025 */}
-                                            {(project.ProjectStatusInfo?.tinh_trang_quyet_toan_den_30_6_2025 || project.ProjectStatusInfo?.cong_no_den_30_6_2025 !== undefined) && (
-                                                <div className="rounded-xl border border-border-subtle bg-bg-muted/30 p-2.5">
-                                                    <div className="text-[10px] font-bold text-txt-muted mb-1">Mốc 30/06/2025 (Trước bàn giao)</div>
-                                                    <div className="space-y-1">
-                                                        {project.ProjectStatusInfo?.tinh_trang_quyet_toan_den_30_6_2025 && (
-                                                            <div className="text-xs">
-                                                                <span className="text-txt-muted">Trạng thái QT: </span>
-                                                                <span className="font-semibold text-txt-primary">{project.ProjectStatusInfo.tinh_trang_quyet_toan_den_30_6_2025}</span>
-                                                            </div>
-                                                        )}
-                                                        {project.ProjectStatusInfo?.cong_no_den_30_6_2025 !== undefined && (
-                                                            <div className="text-xs">
-                                                                <span className="text-txt-muted">Công nợ: </span>
-                                                                <span className="font-bold text-rose-500">{formatVND(project.ProjectStatusInfo.cong_no_den_30_6_2025)}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-
-                                            {/* Sau bàn giao */}
-                                            {(project.ProjectStatusInfo?.tinh_trang_quyet_toan_sau_ban_giao || project.ProjectStatusInfo?.cong_no_sau_ban_giao !== undefined) && (
-                                                <div className="rounded-xl border border-border-subtle bg-bg-muted/30 p-2.5">
-                                                    <div className="text-[10px] font-bold text-txt-muted mb-1">Sau khi bàn giao</div>
-                                                    <div className="space-y-1">
-                                                        {project.ProjectStatusInfo?.tinh_trang_quyet_toan_sau_ban_giao && (
-                                                            <div className="text-xs">
-                                                                <span className="text-txt-muted">Trạng thái QT: </span>
-                                                                <span className="font-semibold text-txt-primary">{project.ProjectStatusInfo.tinh_trang_quyet_toan_sau_ban_giao}</span>
-                                                            </div>
-                                                        )}
-                                                        {project.ProjectStatusInfo?.cong_no_sau_ban_giao !== undefined && (
-                                                            <div className="text-xs">
-                                                                <span className="text-txt-muted">Công nợ: </span>
-                                                                <span className="font-bold text-rose-500">{formatVND(project.ProjectStatusInfo.cong_no_sau_ban_giao)}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Tồn tại vướng mắc bàn giao */}
-                                {project.ProjectStatusInfo?.ton_tai_vuong_mac_ban_giao && (
-                                    <div className="px-2.5 pb-1">
-                                        <div className="flex items-center gap-1.5 mb-1">
-                                            <AlertCircle className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400 animate-pulse" />
-                                            <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Tồn tại, vướng mắc bàn giao</span>
-                                        </div>
-                                        <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed bg-amber-50 dark:bg-amber-950/20 rounded-xl p-2.5 border border-amber-200 dark:border-amber-900/30">
-                                            {project.ProjectStatusInfo.ton_tai_vuong_mac_ban_giao}
-                                        </p>
-                                    </div>
-                                )}
-
-                                {/* Chậm tiến độ & Kiến nghị */}
-                                {project.ProjectStatusInfo?.cham_tien_do && (
-                                    <div className="px-2.5 pb-1 space-y-2 border-t border-border-subtle pt-2">
-                                        <div className="flex items-center gap-1.5">
-                                            <AlertCircle className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
-                                            <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">Thông tin chậm tiến độ & Kiến nghị</span>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                                            {project.ProjectStatusInfo.cham_tien_do.thoi_gian_hoan_thanh && (
-                                                <div className="flex justify-between items-center bg-bg-muted rounded-lg p-2 border border-border-subtle">
-                                                    <span className="text-txt-muted text-[11px]">Hạn hoàn thành:</span>
-                                                    <span className="font-semibold text-txt-primary">{project.ProjectStatusInfo.cham_tien_do.thoi_gian_hoan_thanh}</span>
-                                                </div>
-                                            )}
-                                            {project.ProjectStatusInfo.cham_tien_do.thoi_gian_cham && (
-                                                <div className="flex justify-between items-center bg-bg-muted rounded-lg p-2 border border-border-subtle">
-                                                    <span className="text-txt-muted text-[11px]">Thời gian chậm:</span>
-                                                    <span className="font-semibold text-rose-500">{project.ProjectStatusInfo.cham_tien_do.thoi_gian_cham}</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        {project.ProjectStatusInfo.cham_tien_do.nguyen_nhan && (
-                                            <div className="bg-bg-muted rounded-xl p-2.5 border border-border-subtle">
-                                                <div className="text-[10px] font-bold text-txt-muted mb-1">Nguyên nhân chậm trễ:</div>
-                                                <p className="text-xs text-txt-secondary leading-relaxed">{project.ProjectStatusInfo.cham_tien_do.nguyen_nhan}</p>
-                                            </div>
-                                        )}
-                                        {project.ProjectStatusInfo.cham_tien_do.bien_phap_da_ap_dung && (
-                                            <div className="bg-bg-muted rounded-xl p-2.5 border border-border-subtle">
-                                                <div className="text-[10px] font-bold text-txt-muted mb-1">Biện pháp đã áp dụng:</div>
-                                                <p className="text-xs text-txt-secondary leading-relaxed">{project.ProjectStatusInfo.cham_tien_do.bien_phap_da_ap_dung}</p>
-                                            </div>
-                                        )}
-                                        {project.ProjectStatusInfo.cham_tien_do.kien_nghi_de_xuat && (
-                                            <div className="bg-emerald-50 dark:bg-emerald-950/15 rounded-xl p-2.5 border border-emerald-100 dark:border-emerald-900/30">
-                                                <div className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 mb-1">Kiến nghị, đề xuất giải pháp:</div>
-                                                <p className="text-xs text-emerald-800 dark:text-emerald-300 leading-relaxed font-medium">{project.ProjectStatusInfo.cham_tien_do.kien_nghi_de_xuat}</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
 
 
                     {/* ═══ Tiến độ giải ngân ═══ */}

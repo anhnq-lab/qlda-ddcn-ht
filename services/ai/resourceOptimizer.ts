@@ -47,7 +47,7 @@ export async function analyzeResourceAllocation(): Promise<ResourceOptimizationR
 
             // Calculate utilization
             const totalBudget = project.TotalInvestment || 0;
-            const disbursed = (project.PaymentProgress || project.FinancialProgress || 0) / 100 * totalBudget;
+            const disbursed = (project.ComputedStats?.PaymentProgress || project.FinancialProgress || 0) / 100 * totalBudget;
             const utilizationRate = totalBudget > 0 ? (disbursed / totalBudget) * 100 : 0;
 
             // Detect bottlenecks

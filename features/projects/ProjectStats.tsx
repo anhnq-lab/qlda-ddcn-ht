@@ -41,10 +41,10 @@ export const ProjectStats: React.FC<ProjectStatsProps> = ({ projects, onFilterPh
 
     // Disbursement
     const avgDisbursement = totalProjects > 0
-        ? projects.reduce((sum, p) => sum + (p.PaymentProgress || 0), 0) / totalProjects
+        ? projects.reduce((sum, p) => sum + (p.ComputedStats?.PaymentProgress || 0), 0) / totalProjects
         : 0;
-    const aboveAvgProjects = projects.filter(p => (p.PaymentProgress || 0) > avgDisbursement).length;
-    const highDisbursementProjects = projects.filter(p => (p.PaymentProgress || 0) >= 50).length;
+    const aboveAvgProjects = projects.filter(p => (p.ComputedStats?.PaymentProgress || 0) > avgDisbursement).length;
+    const highDisbursementProjects = projects.filter(p => (p.ComputedStats?.PaymentProgress || 0) >= 50).length;
 
     // Physical progress (execution only)
     const execWithProgress = execProjects.filter(p => p.PhysicalProgress !== undefined && p.PhysicalProgress !== null);

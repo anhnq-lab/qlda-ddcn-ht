@@ -40,6 +40,27 @@ export const LeadershipService = {
     },
 
     /**
+     * Mã phòng mà một Phó GĐ phụ trách = (Ban QLDA suy từ board_number)
+     * ∪ (phòng nghiệp vụ functional_dept_codes). Dùng để lọc công việc theo
+     * đúng các phòng PGĐ phụ trách (khớp hàm RLS get_current_deputy_managed_department_codes).
+     */
+    async getManagedDepartmentCodes(deputyEmployeeId: string): Promise<string[]> {
+        const { data, error } = await db()
+            .select('board_number, functional_dept_codes')
+            .eq('deputy_employee_id', deputyEmployeeId);
+
+        if (error || !data) return [];
+        const boardToCode: Record<number, string> = { 1: 'QLDA1', 2: 'QLDA2', 3: 'QLDA3', 4: 'PTDV' };
+        const codes = new Set<string>();
+        (data as any[]).forEach(r => {
+            const c = boardToCode[Number(r.board_number)];
+            if (c) codes.add(c);
+            (r.functional_dept_codes || []).forEach((fc: string) => { if (fc) codes.add(fc); });
+        });
+        return [...codes];
+    },
+
+    /**
      * Toàn bộ phân công (cho UI admin).
      */
     async getAll(): Promise<LeadershipAssignment[]> {
@@ -56,15 +77,30 @@ export const LeadershipService = {
         boardNumbers: number[],
         changedBy?: string
     ): Promise<void> {
+        // Bảo toàn phòng nghiệp vụ đã gán (functional_dept_codes) qua thao tác sửa Ban
+        let preservedDeptCodes: string[] = [];
+        try {
+            const { data: existing } = await db()
+                .select('functional_dept_codes')
+                .eq('deputy_employee_id', deputyEmployeeId);
+            const set = new Set<string>();
+            (existing as any[] | null)?.forEach(r =>
+                (r.functional_dept_codes || []).forEach((c: string) => { if (c) set.add(c); })
+            );
+            preservedDeptCodes = [...set];
+        } catch { /* giữ rỗng nếu lỗi */ }
+
         // Xóa phân công cũ rồi chèn mới (đơn giản, đảm bảo đồng bộ chính xác)
         const { error: delErr } = await db().delete().eq('deputy_employee_id', deputyEmployeeId);
         if (delErr) throw delErr;
 
         if (boardNumbers.length === 0) return;
 
-        const rows = boardNumbers.map(b => ({
+        const rows = boardNumbers.map((b, i) => ({
             deputy_employee_id: deputyEmployeeId,
             board_number: b,
+            // Gắn phòng nghiệp vụ vào dòng đầu để không mất khi sửa Ban
+            functional_dept_codes: i === 0 ? preservedDeptCodes : [],
             created_by: changedBy ?? null,
             updated_at: new Date().toISOString(),
         }));

@@ -12,7 +12,8 @@ type TableNamesToOverride =
   | 'regulation_bookmarks'
   | 'regulation_documents'
   | 'regulation_chapters'
-  | 'regulation_articles';
+  | 'regulation_articles'
+  | 'project_approvals';
 
 export interface ExtendedDatabase extends Omit<GeneratedDatabase, 'public'> {
     public: Omit<GeneratedDatabase['public'], 'Tables'> & {
@@ -428,6 +429,42 @@ export interface ExtendedDatabase extends Omit<GeneratedDatabase, 'public'> {
                     content_type?: 'text' | 'markdown' | 'component';
                     component_key?: string | null;
                     sort_order?: number;
+                };
+                Relationships: [];
+            };
+            project_approvals: {
+                Row: {
+                    id: string;
+                    project_id: string;
+                    approval_type: string;
+                    document_number: string | null;
+                    document_date: string | null;
+                    agency: string | null;
+                    extra_info: string | null;
+                    created_at: string | null;
+                    updated_at: string | null;
+                };
+                Insert: {
+                    id?: string;
+                    project_id: string;
+                    approval_type: string;
+                    document_number?: string | null;
+                    document_date?: string | null;
+                    agency?: string | null;
+                    extra_info?: string | null;
+                    created_at?: string | null;
+                    updated_at?: string | null;
+                };
+                Update: {
+                    id?: string;
+                    project_id?: string;
+                    approval_type?: string;
+                    document_number?: string | null;
+                    document_date?: string | null;
+                    agency?: string | null;
+                    extra_info?: string | null;
+                    created_at?: string | null;
+                    updated_at?: string | null;
                 };
                 Relationships: [];
             };

@@ -13,7 +13,6 @@ export const dbToProject = (row: any): Project => ({
     ProjectName: row.project_name,
     GroupCode: row.group_code?.trim() as ProjectGroup,
     InvestmentType: row.investment_type as InvestmentType,
-    DecisionMakerID: row.decision_maker_id ? parseInt(row.decision_maker_id) : 0,
     TotalInvestment: Number(row.total_investment) || 0,
     CapitalSource: row.capital_source || '',
     LocationCode: row.location_code || '',
@@ -21,14 +20,11 @@ export const dbToProject = (row: any): Project => ({
     Status: row.status as ProjectStatus,
     IsEmergency: row.is_emergency || false,
     ImageUrl: row.image_url || '',
-    Progress: row.progress || 0,
-    PaymentProgress: row.payment_progress || 0,
     InvestorName: row.investor_name || '',
     MainContractorName: row.main_contractor_name || '',
     ConstructionType: row.construction_type || '',
     ConstructionGrade: row.construction_grade || '',
     ProjectNumber: row.project_number || '',
-    Version: row.version || '',
     Objective: row.objective || '',
     CompetentAuthority: row.competent_authority || '',
     Duration: row.duration || '',
@@ -40,7 +36,6 @@ export const dbToProject = (row: any): Project => ({
     Sector: row.sector || 'Other',
     RequiresBIM: row.requires_bim || false,
     BIMStatus: row.bim_status || 'NotRequired',
-    CDEProjectCode: row.cde_project_code || '',
     Coordinates: row.coordinates || undefined,
     Stage: row.stage || 'Preparation',
     FeasibilityContractor: row.feasibility_contractor || '',
@@ -53,63 +48,18 @@ export const dbToProject = (row: any): Project => ({
     ExpectedEndDate: row.expected_end_date || '',
     ActualEndDate: row.actual_end_date || '',
     InvestmentScale: row.investment_scale || '',
-    PlanningApprovalNumber: row.planning_approval_number || '',
-    PlanningApprovalDate: row.planning_approval_date || '',
-    PCCCApprovalNumber: row.pccc_approval_number || '',
-    PCCCApprovalDate: row.pccc_approval_date || '',
-    PCCCApprovalAgency: row.pccc_approval_agency || '',
-    EnvApprovalNumber: row.env_approval_number || '',
-    EnvApprovalDate: row.env_approval_date || '',
-    EnvApprovalType: row.env_approval_type || '',
-    AppraisalResultNumber: row.appraisal_result_number || '',
-    AppraisalResultDate: row.appraisal_result_date || '',
-    AppraisalAgency: row.appraisal_agency || '',
     CostBreakdown: row.cost_breakdown || {},
-    DesignAppraisalNumber: row.design_appraisal_number || '',
-    DesignAppraisalDate: row.design_appraisal_date || '',
-    DesignApprovalNumber: row.design_approval_number || '',
-    DesignApprovalDate: row.design_approval_date || '',
-    DesignApprovalAuthority: row.design_approval_authority || '',
-    ConstructionPermitNumber: row.construction_permit_number || '',
-    ConstructionPermitDate: row.construction_permit_date || '',
-    ConstructionPermitAgency: row.construction_permit_agency || '',
-    ActualStartDateConstruction: row.actual_start_date_construction || '',
-    InsuranceContract: row.insurance_contract || '',
-    InsuranceValue: Number(row.insurance_value) || 0,
-    AcceptanceResult: row.acceptance_result || '',
-    AcceptanceDate: row.acceptance_date || '',
     HandoverDate: row.handover_date || '',
-    TT24CompletionPct: row.tt24_completion_pct || 0,
     ManagementBoard: row.management_board || undefined,
     ProvinceCode: row.province_code || '',
-    // Quy mô công trình
-    TotalEstimate: Number(row.total_estimate) || 0,
-    SiteArea: Number(row.site_area) || 0,
-    ConstructionArea: Number(row.construction_area) || 0,
-    FloorArea: Number(row.floor_area) || 0,
-    BuildingHeight: Number(row.building_height) || 0,
-    BuildingDensity: Number(row.building_density) || 0,
-    LandUseCoefficient: Number(row.land_use_coefficient) || 0,
-    AboveGroundFloors: Number(row.above_ground_floors) || 0,
-    BasementFloors: Number(row.basement_floors) || 0,
     DecisionLevelBeforeHandover: row.decision_level_before_handover || '',
     OldInvestor: row.old_investor || '',
     TransferDecision: row.transfer_decision || '',
     CurrentStatusCode: row.current_status_code ? Number(row.current_status_code) : undefined,
-    PolicyDecisionLevel: row.policy_decision_level || '',
-    PolicyDecisionNumber: row.policy_decision_number || '',
-    PolicyDecisionDate: row.policy_decision_date || '',
-    PolicyDecisionAuthority: row.policy_decision_authority || '',
-    BudgetAllocations: row.budget_allocations || {},
     BiddingForm: row.bidding_form || '',
-    KHVInfo: row.khv_info || {},
-    ImplementationTracking: row.implementation_tracking || {},
-    AdjustedApproval: row.adjusted_approval || {},
     ContractorDetails: row.contractor_details || {},
     ProjectManagement: row.project_management || {},
-    ProjectStatusInfo: row.project_status_info || {},
     SpecialtyType: row.specialty_type || '',
-    SpecialtyDetails: row.specialty_details || '',
 });
 
 export const projectToDb = (p: Partial<Project>) => {
@@ -123,8 +73,6 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.Status !== undefined) result.status = p.Status;
     if (p.IsEmergency !== undefined) result.is_emergency = p.IsEmergency;
     if (p.ImageUrl !== undefined) result.image_url = p.ImageUrl;
-    if (p.Progress !== undefined) result.progress = p.Progress;
-    if (p.PaymentProgress !== undefined) result.payment_progress = p.PaymentProgress;
     if (p.InvestorName !== undefined) result.investor_name = p.InvestorName;
     if (p.MainContractorName !== undefined) result.main_contractor_name = p.MainContractorName;
     if (p.ConstructionType !== undefined) result.construction_type = p.ConstructionType;
@@ -132,7 +80,6 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.LocationCode !== undefined) result.location_code = p.LocationCode;
     if (p.CompetentAuthority !== undefined) result.competent_authority = p.CompetentAuthority;
     if (p.ManagementForm !== undefined) result.management_form = p.ManagementForm;
-    if (p.Version !== undefined) result.version = p.Version;
     if (p.Objective !== undefined) result.objective = p.Objective;
     if (p.ProjectNumber !== undefined) result.project_number = p.ProjectNumber;
     if (p.Duration !== undefined) result.duration = p.Duration;
@@ -145,23 +92,7 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.StartDate !== undefined) result.start_date = p.StartDate === '' ? null : p.StartDate;
     if (p.ExpectedEndDate !== undefined) result.expected_end_date = p.ExpectedEndDate === '' ? null : p.ExpectedEndDate;
     if (p.InvestmentScale !== undefined) result.investment_scale = p.InvestmentScale;
-    if (p.PlanningApprovalNumber !== undefined) result.planning_approval_number = p.PlanningApprovalNumber;
-    if (p.PlanningApprovalDate !== undefined) result.planning_approval_date = p.PlanningApprovalDate === '' ? null : p.PlanningApprovalDate;
-    if (p.PCCCApprovalNumber !== undefined) result.pccc_approval_number = p.PCCCApprovalNumber;
-    if (p.PCCCApprovalDate !== undefined) result.pccc_approval_date = p.PCCCApprovalDate === '' ? null : p.PCCCApprovalDate;
-    if (p.PCCCApprovalAgency !== undefined) result.pccc_approval_agency = p.PCCCApprovalAgency;
-    if (p.EnvApprovalNumber !== undefined) result.env_approval_number = p.EnvApprovalNumber;
-    if (p.EnvApprovalDate !== undefined) result.env_approval_date = p.EnvApprovalDate === '' ? null : p.EnvApprovalDate;
-    if (p.EnvApprovalType !== undefined) result.env_approval_type = p.EnvApprovalType;
-    if (p.AppraisalResultNumber !== undefined) result.appraisal_result_number = p.AppraisalResultNumber;
-    if (p.AppraisalResultDate !== undefined) result.appraisal_result_date = p.AppraisalResultDate === '' ? null : p.AppraisalResultDate;
-    if (p.AppraisalAgency !== undefined) result.appraisal_agency = p.AppraisalAgency;
     if (p.CostBreakdown !== undefined) result.cost_breakdown = p.CostBreakdown;
-    if (p.DesignAppraisalNumber !== undefined) result.design_appraisal_number = p.DesignAppraisalNumber;
-    if (p.DesignAppraisalDate !== undefined) result.design_appraisal_date = p.DesignAppraisalDate === '' ? null : p.DesignAppraisalDate;
-    if (p.DesignApprovalNumber !== undefined) result.design_approval_number = p.DesignApprovalNumber;
-    if (p.DesignApprovalDate !== undefined) result.design_approval_date = p.DesignApprovalDate === '' ? null : p.DesignApprovalDate;
-    if (p.DesignApprovalAuthority !== undefined) result.design_approval_authority = p.DesignApprovalAuthority;
     if (p.FeasibilityContractor !== undefined) result.feasibility_contractor = p.FeasibilityContractor;
     if (p.SurveyContractor !== undefined) result.survey_contractor = p.SurveyContractor;
     if (p.ReviewContractor !== undefined) result.review_contractor = p.ReviewContractor;
@@ -171,49 +102,19 @@ export const projectToDb = (p: Partial<Project>) => {
     if (p.ApprovalDate !== undefined) result.approval_date = p.ApprovalDate === '' ? null : p.ApprovalDate;
     if (p.IsODA !== undefined) result.is_oda = p.IsODA;
     if (p.BIMStatus !== undefined) result.bim_status = p.BIMStatus;
-    if (p.CDEProjectCode !== undefined) result.cde_project_code = p.CDEProjectCode;
     if (p.ActualEndDate !== undefined) result.actual_end_date = p.ActualEndDate === '' ? null : p.ActualEndDate;
     if (p.Coordinates !== undefined) result.coordinates = p.Coordinates;
-    if (p.ConstructionPermitNumber !== undefined) result.construction_permit_number = p.ConstructionPermitNumber;
-    if (p.ConstructionPermitDate !== undefined) result.construction_permit_date = p.ConstructionPermitDate === '' ? null : p.ConstructionPermitDate;
-    if (p.ConstructionPermitAgency !== undefined) result.construction_permit_agency = p.ConstructionPermitAgency;
-    if (p.ActualStartDateConstruction !== undefined) result.actual_start_date_construction = p.ActualStartDateConstruction === '' ? null : p.ActualStartDateConstruction;
-    if (p.InsuranceContract !== undefined) result.insurance_contract = p.InsuranceContract;
-    if (p.InsuranceValue !== undefined) result.insurance_value = p.InsuranceValue;
-    if (p.AcceptanceResult !== undefined) result.acceptance_result = p.AcceptanceResult;
-    if (p.AcceptanceDate !== undefined) result.acceptance_date = p.AcceptanceDate === '' ? null : p.AcceptanceDate;
     if (p.HandoverDate !== undefined) result.handover_date = p.HandoverDate === '' ? null : p.HandoverDate;
-    if (p.TT24CompletionPct !== undefined) result.tt24_completion_pct = p.TT24CompletionPct;
     if (p.ManagementBoard !== undefined) result.management_board = p.ManagementBoard;
     if (p.ProvinceCode !== undefined) result.province_code = p.ProvinceCode;
-    // Quy mô công trình
-    if (p.TotalEstimate !== undefined) result.total_estimate = p.TotalEstimate;
-    if (p.SiteArea !== undefined) result.site_area = p.SiteArea;
-    if (p.ConstructionArea !== undefined) result.construction_area = p.ConstructionArea;
-    if (p.FloorArea !== undefined) result.floor_area = p.FloorArea;
-    if (p.BuildingHeight !== undefined) result.building_height = p.BuildingHeight;
-    if (p.BuildingDensity !== undefined) result.building_density = p.BuildingDensity;
-    if (p.LandUseCoefficient !== undefined) result.land_use_coefficient = p.LandUseCoefficient;
-    if (p.AboveGroundFloors !== undefined) result.above_ground_floors = p.AboveGroundFloors;
-    if (p.BasementFloors !== undefined) result.basement_floors = p.BasementFloors;
     if (p.DecisionLevelBeforeHandover !== undefined) result.decision_level_before_handover = p.DecisionLevelBeforeHandover;
     if (p.OldInvestor !== undefined) result.old_investor = p.OldInvestor;
     if (p.TransferDecision !== undefined) result.transfer_decision = p.TransferDecision;
     if (p.CurrentStatusCode !== undefined) result.current_status_code = p.CurrentStatusCode;
-    if (p.PolicyDecisionLevel !== undefined) result.policy_decision_level = p.PolicyDecisionLevel;
-    if (p.PolicyDecisionNumber !== undefined) result.policy_decision_number = p.PolicyDecisionNumber;
-    if (p.PolicyDecisionDate !== undefined) result.policy_decision_date = p.PolicyDecisionDate === '' ? null : p.PolicyDecisionDate;
-    if (p.PolicyDecisionAuthority !== undefined) result.policy_decision_authority = p.PolicyDecisionAuthority;
-    if (p.BudgetAllocations !== undefined) result.budget_allocations = p.BudgetAllocations;
     if (p.BiddingForm !== undefined) result.bidding_form = p.BiddingForm;
-    if (p.KHVInfo !== undefined) result.khv_info = p.KHVInfo;
-    if (p.ImplementationTracking !== undefined) result.implementation_tracking = p.ImplementationTracking;
-    if (p.AdjustedApproval !== undefined) result.adjusted_approval = p.AdjustedApproval;
     if (p.ContractorDetails !== undefined) result.contractor_details = p.ContractorDetails;
     if (p.ProjectManagement !== undefined) result.project_management = p.ProjectManagement;
-    if (p.ProjectStatusInfo !== undefined) result.project_status_info = p.ProjectStatusInfo;
     if (p.SpecialtyType !== undefined) result.specialty_type = p.SpecialtyType;
-    if (p.SpecialtyDetails !== undefined) result.specialty_details = p.SpecialtyDetails;
     return result;
 };
 

@@ -19,31 +19,23 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
         updateField('CostBreakdown', { ...(formData.CostBreakdown || {}), [key]: value });
     };
 
-    const updateBudgetAllocation = (key: string, value: number) => {
-        updateField('BudgetAllocations', { ...(formData.BudgetAllocations || {}), [key]: value });
-    };
-
-    // ── Kiểm tra nhất quán: Tổng mức đầu tư vs tổng cơ cấu chi phí / nguồn vốn ──
+    // ── Kiểm tra nhất quán: Tổng mức đầu tư vs tổng cơ cấu chi phí ──
     const totalInvestment = Number(formData.TotalInvestment) || 0;
     const costSum = ['landClearance', 'construction', 'equipment', 'management', 'consultancy', 'other', 'contingency']
         .reduce((sum, key) => sum + (Number(formData.CostBreakdown?.[key]) || 0), 0);
-    const budgetSum = ['BudgetNSTW', 'BudgetNSDiaphuong', 'BudgetLoan', 'BudgetODA', 'BudgetOtherNSNN']
-        .reduce((sum, key) => sum + (Number(formData.BudgetAllocations?.[key]) || 0), 0);
     const fmt = (n: number) => new Intl.NumberFormat('vi-VN').format(n);
     const costMismatch = costSum > 0 && totalInvestment > 0 && costSum !== totalInvestment;
-    const budgetMismatch = budgetSum > 0 && totalInvestment > 0 && budgetSum !== totalInvestment;
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             <SectionHeader icon={TrendingUp} title="Cơ cấu vốn & Chi phí" subtitle="Phân tích nguồn vốn và hạng mục chi phí trong tổng mức đầu tư" />
 
-            {(costMismatch || budgetMismatch) && (
+            {costMismatch && (
                 <div className="flex items-start gap-2 px-3 py-2 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-xs">
                     <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
                     <div className="space-y-0.5">
                         <p className="font-semibold">Số liệu chưa khớp Tổng mức đầu tư ({fmt(totalInvestment)} VNĐ):</p>
-                        {costMismatch && <p>• Tổng hạng mục chi phí: {fmt(costSum)} VNĐ (lệch {fmt(Math.abs(costSum - totalInvestment))})</p>}
-                        {budgetMismatch && <p>• Tổng cơ cấu nguồn vốn: {fmt(budgetSum)} VNĐ (lệch {fmt(Math.abs(budgetSum - totalInvestment))})</p>}
+                        <p>• Tổng hạng mục chi phí: {fmt(costSum)} VNĐ (lệch {fmt(Math.abs(costSum - totalInvestment))})</p>
                     </div>
                 </div>
             )}
@@ -97,51 +89,6 @@ export const ProjectFormInvestment: React.FC<ProjectFormInvestmentProps> = ({
                             </div>
                         </>
                     )}
-                </div>
-            </div>
-
-            {/* ── Cơ cấu nguồn vốn chi tiết ── */}
-            <div>
-                <h4 className="text-sm font-semibold text-txt-secondary mb-1 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-emerald-500" /> Cơ cấu nguồn vốn chi tiết
-                </h4>
-                <p className="text-xs text-txt-placeholder mb-3">Phân bổ theo từng nguồn vốn (đơn vị: VNĐ)</p>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className={labelClass}>Ngân sách Trung ương</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.BudgetAllocations?.BudgetNSTW || 0}
-                            onChange={(v: string | number) => updateBudgetAllocation('BudgetNSTW', Number(v))}
-                            isDecimal={false} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Ngân sách địa phương</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.BudgetAllocations?.BudgetNSDiaphuong || 0}
-                            onChange={(v: string | number) => updateBudgetAllocation('BudgetNSDiaphuong', Number(v))}
-                            isDecimal={false} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Vốn vay</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.BudgetAllocations?.BudgetLoan || 0}
-                            onChange={(v: string | number) => updateBudgetAllocation('BudgetLoan', Number(v))}
-                            isDecimal={false} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Vốn ODA / nước ngoài</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.BudgetAllocations?.BudgetODA || 0}
-                            onChange={(v: string | number) => updateBudgetAllocation('BudgetODA', Number(v))}
-                            isDecimal={false} />
-                    </div>
-                    <div>
-                        <label className={labelClass}>Vốn khác ngoài NSNN</label>
-                        <FormattedInput placeholder="0" className={inputClass}
-                            value={formData.BudgetAllocations?.BudgetOtherNSNN || 0}
-                            onChange={(v: string | number) => updateBudgetAllocation('BudgetOtherNSNN', Number(v))}
-                            isDecimal={false} />
-                    </div>
                 </div>
             </div>
 

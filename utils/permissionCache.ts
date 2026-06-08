@@ -19,6 +19,8 @@ export interface PermissionCacheEntry {
     isGlobalScope: boolean;
     /** Ban QLDA mà PGĐ phụ trách (chỉ dùng cho deputy_director) */
     managedBoards?: number[];
+    /** Mã phòng PGĐ phụ trách = Ban QLDA + phòng nghiệp vụ (chỉ deputy_director) */
+    managedDeptCodes?: string[];
     cachedAt: number;
     userId: string;
 }
